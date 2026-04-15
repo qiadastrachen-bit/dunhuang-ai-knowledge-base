@@ -116,8 +116,8 @@
 
 ```bash
 # 1. 克隆项目
-git clone https://github.com/qiadastrachen-bit/dunhuang-knowledge-base.git
-cd dunhuang-knowledge-base
+git clone https://github.com/qiadastrachen-bit/dunhuang-ai-knowledge-base.git
+cd dunhuang-ai-knowledge-base
 
 # 2. 创建虚拟环境（推荐）
 python -m venv venv
@@ -219,7 +219,7 @@ Flask 后端提供以下 RESTful API：
 ## 项目结构
 
 ```
-dunhuang-knowledge-base/
+dunhuang-ai-knowledge-base/
 ├── api/
 │   ├── __init__.py           # API 模块初始化
 │   └── server.py             # Flask 后端（RESTful API + 静态文件服务）
