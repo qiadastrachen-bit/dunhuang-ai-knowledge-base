@@ -1,0 +1,74 @@
+# ============================================================
+# 敦煌文化遗产智能知识库系统 — 配置文件
+# ============================================================
+# 说明：所有可配置项集中管理，路径均相对于项目根目录。
+#       敏感信息（API Key）请通过环境变量注入，不要写在此文件中。
+# ============================================================
+
+# ── 路径配置 ────────────────────────────────────────────────
+paths:
+  data_dir: "data"                   # 数据根目录
+  pdf_dir: "data/raw"                # 原始 PDF 文献目录
+  cache_dir: "data/processed"        # 向量索引缓存目录
+  # 知识库构建产物
+  index_file: "data/processed/vector_index.npy"
+  docs_file: "data/processed/documents.json"
+  metadata_file: "data/processed/metadata.json"
+
+# ── PDF 解析 ────────────────────────────────────────────────
+pdf_parser:
+  supported_extensions: [".pdf"]
+  # 每页最大字符数，超长页会被截断以避免内存问题
+  max_chars_per_page: 10000
+
+# ── 文本分块 ────────────────────────────────────────────────
+chunker:
+  # 中文按字符数切分（非英文按词数）
+  chunk_size: 500
+  overlap: 50
+  # 最小块长度，低于此值的碎片会被丢弃
+  min_chunk_length: 30
+
+# ── 向量化模型 ─────────────────────────────────────────────
+vectorizer:
+  model_name: "paraphrase-multilingual-MiniLM-L12-v2"
+  # 向量维度（由模型决定，此处仅供参考）
+  embedding_dim: 384
+  # 检索时返回的最大结果数
+  default_top_k: 5
+  # 相似度阈值，低于此值的结果不返回（0~1）
+  similarity_threshold: 0.2
+
+# ── RAG 引擎 ────────────────────────────────────────────────
+rag:
+  # LLM 配置 — 通过环境变量注入 API Key
+  # 支持：openai 兼容接口 / 本地模型
+  llm_provider: "deepseek"            # 可选：openai, deepseek, local
+  llm_base_url: ""                    # 覆盖此值以使用自定义端点
+  llm_model: "deepseek-chat"
+  llm_max_tokens: 2048
+  llm_temperature: 0.3
+
+  # System Prompt 模板，{{context}} 和 {{question}} 会被自动替换
+  system_prompt: |
+    你是一位专注于敦煌学研究的学术助手。你的任务是根据提供的文献内容，准确回答用户关于敦煌文化遗产的问题。
+
+    回答要求：
+    1. 基于提供的文献内容作答，不编造信息
+    2. 每个关键事实后标注来源文献
+    3. 如果文献中没有相关信息，请明确说明
+    4. 回答应结构清晰、语言专业但不晦涩
+
+# ── Streamlit UI ────────────────────────────────────────────
+ui:
+  page_title: "敦煌文化遗产智能知识库"
+  page_icon: "🏛️"
+  layout: "wide"
+  # 预设示例问题（首页引导）
+  example_questions:
+    - "敦煌藻井中的莲花纹样有什么特征？"
+    - "飞天形象在不同朝代有什么变化？"
+    - "敦煌壁画使用了哪些矿物颜料？"
+    - "联珠纹在敦煌艺术中的来源是什么？"
+    - "三兔共耳纹样出现在哪些洞窟中？"
+    - "吐蕃时期敦煌艺术有什么特色？"

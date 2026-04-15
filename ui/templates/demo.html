@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>敦煌文化遗产智能知识库系统 · 交互演示</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    *,[class]{box-sizing:border-box;margin:0;padding:0}
+    :root{--gold:#C9A84C;--red:#B5392C;--indigo:#2C3D6B;--teal:#3A7D7B;--cream:#F5EDD6;--dark:#1C1A16;--light:#FDFAF3}
+    html{scroll-behavior:smooth}
+    body{font-family:"PingFang SC","Microsoft YaHei","Noto Serif SC",serif;background:var(--light);color:var(--dark);line-height:1.8}
+    nav{position:sticky;top:0;z-index:100;background:rgba(28,26,22,.97);backdrop-filter:blur(10px);display:flex;justify-content:center;gap:1.5rem;padding:.7rem 2rem;flex-wrap:wrap}
+    nav a{color:var(--gold);text-decoration:none;font-size:.82rem;letter-spacing:.06em;transition:opacity .2s}
+    nav a:hover{opacity:.6}
+
+
+    .hero{position:relative;min-height:360px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:4rem 2rem 3rem;background:radial-gradient(ellipse 80% 55% at 50% 35%,#2C3D6B55 0%,transparent 70%),linear-gradient(160deg,#1C1A16 0%,#2a1f10 50%,#1C1A16 100%);overflow:hidden}
+    .hero::before,.hero::after{content:"";position:absolute;border-radius:50%;border:1px solid rgba(201,168,76,.13);pointer-events:none}
+    .hero::before{width:480px;height:480px;top:50%;left:50%;transform:translate(-50%,-50%)}
+    .hero::after{width:660px;height:660px;top:50%;left:50%;transform:translate(-50%,-50%)}
+    .hero-badge{display:inline-block;font-size:.72rem;letter-spacing:.2em;color:var(--gold);background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.3);padding:.28rem 1rem;border-radius:20px;margin-bottom:1.3rem}
+    .hero h1{font-size:clamp(1.4rem,4.5vw,2.8rem);color:#fff;font-weight:800;line-height:1.3}
+    .hero h1 span{color:var(--gold)}
+    .hero-sub{margin-top:.9rem;max-width:600px;color:rgba(255,255,255,.6);font-size:.9rem;line-height:1.9}
+    .metric-strip{background:rgba(201,168,76,.08);border-top:1px solid rgba(201,168,76,.15);border-bottom:1px solid rgba(201,168,76,.15);display:flex;flex-wrap:wrap;justify-content:center;padding:1.2rem 2rem;margin-top:2.2rem}
+    .metric-item{display:flex;flex-direction:column;align-items:center;padding:0 2.5rem;border-right:1px solid rgba(201,168,76,.2)}
+    .metric-item:last-child{border-right:none}
+    .metric-num{font-size:2rem;font-weight:800;color:var(--gold);line-height:1}
+    .metric-label{font-size:.7rem;color:rgba(255,255,255,.5);margin-top:.2rem;letter-spacing:.05em}
+    .hero-tech{margin-top:1.5rem;display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center}
+    .tech-pill{font-size:.72rem;padding:.22rem .7rem;border-radius:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.6);letter-spacing:.03em}
+    section{max-width:1100px;margin:0 auto;padding:4rem 1.5rem}
+    .divider{border:none;border-top:1px solid #e4d9c4;margin:0}
+    .section-label{font-size:.7rem;letter-spacing:.18em;color:var(--gold);text-transform:uppercase;margin-bottom:.4rem}
+    .section-header{display:flex;align-items:flex-start;gap:1rem;margin-bottom:2.2rem}
+    .section-number{width:36px;height:36px;border-radius:50%;background:var(--gold);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:700;flex-shrink:0;margin-top:.1rem}
+    .section-header h2{font-size:1.3rem;color:var(--indigo);font-weight:700}
+    .section-header p{font-size:.8rem;color:#888;margin-top:.1rem}
+    .section-tag{margin-left:auto;flex-shrink:0;font-size:.68rem;padding:.2rem .65rem;border-radius:8px;background:var(--cream);border:1px solid #d9cdb0;color:var(--teal);margin-top:.1rem;white-space:nowrap}
+    .arch-section{background:#F8F4EC;max-width:100%;padding:4rem 0}
+    .arch-container{max-width:1100px;margin:0 auto;padding:0 1.5rem}
+    .arch-flow{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:.4rem;margin-bottom:1.6rem}
+    .arch-node{padding:.65rem 1.1rem;border-radius:10px;font-size:.8rem;font-weight:600;text-align:center;min-width:120px}
+    .arch-node.input{background:var(--indigo);color:#fff}
+    .arch-node.proc{background:var(--gold);color:var(--dark)}
+    .arch-node.output{background:var(--teal);color:#fff}
+    .arch-node.data{background:#fff;color:var(--indigo);border:2px solid var(--indigo)}
+    .arch-arrow{font-size:1.1rem;color:var(--gold);flex-shrink:0}
+    .arch-desc{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1rem}
+    .arch-card{background:#fff;border-radius:10px;padding:1rem;border-left:4px solid var(--gold);box-shadow:0 2px 10px rgba(0,0,0,.06)}
+    .arch-card h4{font-size:.88rem;color:var(--indigo);margin-bottom:.35rem}
+    .arch-card p{font-size:.79rem;color:#666;line-height:1.7}
+    .arch-card code{font-size:.71rem;background:var(--cream);padding:.1rem .38rem;border-radius:4px;color:var(--teal)}
+    .filter-bar{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:2rem;padding:1rem 1.2rem;background:#fff;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.06);align-items:center}
+    .filter-label{font-size:.76rem;color:#888;flex-shrink:0}
+    .filter-btn{font-size:.76rem;padding:.28rem .8rem;border-radius:13px;cursor:pointer;border:1.5px solid #ddd;background:#fff;color:#555;transition:all .15s;font-family:inherit}
+    .filter-btn:hover{border-color:var(--gold);color:var(--gold)}
+    .filter-btn.active{background:var(--gold);border-color:var(--gold);color:#fff;font-weight:600}
+    .timeline{position:relative;padding-left:2.5rem}
+    .timeline::before{content:"";position:absolute;left:.82rem;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--gold),var(--teal),var(--red))}
+    .tl-item{position:relative;margin-bottom:1.5rem;transition:opacity .3s}
+    .tl-item.hidden{opacity:0;pointer-events:none;height:0;overflow:hidden;margin:0}
+    .tl-dot{position:absolute;left:-1.85rem;top:.42rem;width:13px;height:13px;border-radius:50%;border:2px solid #fff}
+    .tl-card{background:#fff;border-radius:10px;padding:1rem 1.3rem;box-shadow:0 2px 12px rgba(0,0,0,.07);border-left:4px solid var(--gold);transition:transform .2s,box-shadow .2s}
+    .tl-card:hover{transform:translateX(5px);box-shadow:0 4px 18px rgba(0,0,0,.12)}
+    .tl-era{font-size:.68rem;letter-spacing:.1em;color:var(--gold);font-weight:700;margin-bottom:.2rem}
+    .tl-card h3{font-size:1rem;color:var(--indigo);margin-bottom:.3rem}
+    .tl-card p{font-size:.84rem;color:#555}
+    .tl-tags{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.55rem}
+    .tl-tag{font-size:.7rem;padding:.18rem .5rem;border-radius:8px;background:var(--cream);color:var(--indigo);border:1px solid #d9cdb0}
+    .pat-section{background:var(--cream);max-width:100%;padding:4rem 0}
+    .pat-container{max-width:1100px;margin:0 auto;padding:0 1.5rem}
+    .pattern-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1.1rem}
+    .pattern-card{background:#fff;border-radius:12px;padding:1.3rem;box-shadow:0 2px 12px rgba(0,0,0,.07);border-top:4px solid var(--gold);transition:transform .2s,opacity .3s}
+    .pattern-card:hover{transform:translateY(-5px)}
+    .pattern-card.hidden{opacity:0;pointer-events:none;display:none}
+    .pattern-card:nth-child(1){border-top-color:#6B8CBE}
+    .pattern-card:nth-child(2){border-top-color:#5A9E6E}
+    .pattern-card:nth-child(3){border-top-color:var(--red)}
+    .pattern-card:nth-child(4){border-top-color:var(--gold)}
+    .pattern-icon{font-size:2rem;margin-bottom:.6rem}
+    .pattern-card h3{font-size:1rem;color:var(--indigo);margin-bottom:.35rem}
+    .pattern-card .examples{font-size:.75rem;color:var(--gold);margin-bottom:.4rem}
+    .pattern-card p{font-size:.83rem;color:#555;line-height:1.7}
+    .pattern-core{margin-top:.65rem;font-size:.75rem;color:var(--teal);font-style:italic}
+    .chart-row{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem}
+    @media(max-width:700px){.chart-row{grid-template-columns:1fr}}
+    .chart-wrapper{background:#fff;border-radius:12px;padding:1.8rem;box-shadow:0 2px 16px rgba(0,0,0,.08)}
+    .chart-title{font-size:.86rem;color:var(--indigo);font-weight:700;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid #eeddb4}
+    .color-section{background:linear-gradient(135deg,#1C1A16,#2a2010);max-width:100%;padding:4rem 0}
+    .color-container{max-width:1100px;margin:0 auto;padding:0 1.5rem}
+    .color-palette{display:flex;flex-wrap:wrap;gap:1rem;margin-top:1.2rem}
+    .color-swatch{display:flex;flex-direction:column;align-items:center;gap:.35rem}
+    .swatch-box{width:54px;height:54px;border-radius:10px;box-shadow:0 3px 10px rgba(0,0,0,.25);cursor:pointer;transition:transform .2s,box-shadow .2s}
+    .swatch-box:hover{transform:scale(1.15);box-shadow:0 6px 18px rgba(0,0,0,.35)}
+    .swatch-label{font-size:.65rem;text-align:center;line-height:1.4;color:rgba(255,255,255,.5)}
+    #colorPopup{display:none;margin-top:1.2rem}
+    .popup-inner{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:1rem 1.3rem;display:flex;gap:1rem;align-items:flex-start}
+    #popupSwatch{width:48px;height:48px;border-radius:8px;flex-shrink:0}
+    #popupName{color:var(--gold);font-weight:700;font-size:.95rem}
+    #popupDesc{color:rgba(255,255,255,.7);font-size:.82rem;margin-top:.3rem;line-height:1.7}
+    .color-chart-wrap{margin-top:1.6rem}
+    .color-chart-wrap .chart-wrapper{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1)}
+    .color-chart-wrap .chart-title{color:var(--gold);border-bottom-color:rgba(201,168,76,.25)}
+    .qa-container{background:#fff;border-radius:14px;box-shadow:0 4px 24px rgba(0,0,0,.09);overflow:hidden}
+    .qa-header{background:linear-gradient(120deg,var(--indigo),#3d5289);padding:1.1rem 1.7rem;display:flex;align-items:center;gap:1rem}
+    .qa-header-icon{font-size:1.4rem}
+    .qa-header-text h3{color:#fff;font-size:1rem;font-weight:700}
+    .qa-header-text p{color:rgba(255,255,255,.55);font-size:.75rem;margin-top:.08rem}
+    .qa-status{margin-left:auto;font-size:.68rem;padding:.22rem .65rem;border-radius:10px;background:rgba(58,125,123,.3);color:#7ecfcd;border:1px solid rgba(126,207,205,.3);white-space:nowrap}
+    .qa-status.loading{background:rgba(201,168,76,.3);color:#C9A84C;border-color:rgba(201,168,76,.3)}
+    .qa-preset{padding:.9rem 1.7rem;background:#f8f4ec;border-bottom:1px solid #e8dfc8;display:flex;flex-wrap:wrap;gap:.45rem;align-items:center}
+    .qa-preset-label{font-size:.73rem;color:#888;flex-shrink:0}
+    .preset-btn{font-size:.73rem;padding:.25rem .7rem;border-radius:12px;border:1px solid #d0c5a8;background:#fff;color:#555;cursor:pointer;transition:all .15s;font-family:inherit}
+    .preset-btn:hover{background:var(--gold);border-color:var(--gold);color:#fff}
+    .qa-messages{height:320px;overflow-y:auto;padding:1.1rem 1.7rem;display:flex;flex-direction:column;gap:1rem}
+    .qa-messages::-webkit-scrollbar{width:4px}
+    .qa-messages::-webkit-scrollbar-thumb{background:#ddd;border-radius:2px}
+    .msg{display:flex;gap:.7rem;align-items:flex-start}
+    .msg-user{flex-direction:row-reverse}
+    .msg-avatar{width:32px;height:32px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1rem}
+    .msg-user .msg-avatar{background:var(--gold)}
+    .msg-bot .msg-avatar{background:var(--indigo)}
+    .msg-bubble{max-width:78%;padding:.65rem 1rem;border-radius:12px;font-size:.85rem;line-height:1.75}
+    .msg-user .msg-bubble{background:var(--indigo);color:#fff;border-radius:12px 4px 12px 12px}
+    .msg-bot .msg-bubble{background:#f4f0e8;color:#333;border-radius:4px 12px 12px 12px;border:1px solid #e5ddc8}
+    .msg-bot .msg-bubble strong{color:var(--indigo)}
+    .source-tag{display:inline-block;font-size:.67rem;padding:.1rem .4rem;background:var(--cream);border:1px solid #d0c5a8;border-radius:6px;color:var(--teal);margin-top:.4rem}
+    .typing-indicator{display:flex;gap:4px;align-items:center;padding:.25rem 0}
+    .typing-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);opacity:.4;animation:bounce 1.2s ease-in-out infinite}
+    .typing-dot:nth-child(2){animation-delay:.2s}
+    .typing-dot:nth-child(3){animation-delay:.4s}
+    @keyframes bounce{0%,80%,100%{transform:translateY(0);opacity:.4}40%{transform:translateY(-6px);opacity:1}}
+    .qa-input-row{padding:.9rem 1.7rem;border-top:1px solid #e8dfc8;display:flex;gap:.8rem;background:#faf6ee}
+    .qa-input{flex:1;padding:.6rem 1rem;border:1.5px solid #d8cfb8;border-radius:22px;font-size:.86rem;font-family:inherit;outline:none;background:#fff;color:var(--dark);transition:border-color .2s}
+    .qa-input:focus{border-color:var(--gold)}
+    .qa-send{padding:.6rem 1.3rem;border-radius:22px;background:var(--gold);border:none;color:#fff;font-size:.86rem;cursor:pointer;font-family:inherit;font-weight:600;transition:background .15s,transform .1s}
+    .qa-send:hover{background:#b8922e}
+    .qa-send:active{transform:scale(.96)}
+    .qa-send:disabled{background:#ccc;cursor:not-allowed}
+    .search-wrapper{margin-bottom:1.5rem}
+    .search-row{display:flex;gap:.8rem}
+    .search-box{flex:1;padding:.6rem 1rem;border:1.5px solid #d8cfb8;border-radius:22px;font-size:.86rem;font-family:inherit;outline:none;background:#fff;color:var(--dark);transition:border-color .2s}
+    .search-box:focus{border-color:var(--gold)}
+    .search-btn{padding:.6rem 1.2rem;border-radius:22px;background:var(--indigo);border:none;color:#fff;font-size:.86rem;cursor:pointer;font-family:inherit;font-weight:600;transition:background .15s}
+    .search-btn:hover{background:#3d5289}
+    .search-results{margin-top:.9rem;max-height:250px;overflow-y:auto;display:flex;flex-direction:column;gap:.5rem}
+    .r-item{background:#fff;border-radius:8px;padding:.7rem 1rem;border-left:3px solid var(--teal);box-shadow:0 1px 6px rgba(0,0,0,.05);font-size:.83rem;color:#444}
+    .r-source{font-size:.7rem;color:var(--teal);margin-bottom:.2rem;font-weight:700}
+    .r-score{float:right;font-size:.67rem;padding:.1rem .4rem;background:var(--cream);border-radius:4px;color:var(--gold);font-weight:700}
+    mark{background:#fff3c0;color:#7a5800;border-radius:2px;padding:0 1px}
+    footer{text-align:center;padding:2.5rem 1rem;background:var(--dark);color:rgba(255,255,255,.4);font-size:.75rem;letter-spacing:.07em}
+    footer span{color:var(--gold)}
+
+
+    .fade-in{opacity:0;transform:translateY(18px);transition:opacity .55s,transform .55s}
+    .fade-in.visible{opacity:1;transform:translateY(0)}
+  </style>
+</head>
+<body>
+<nav>
+  <a href="#arch">技术架构</a>
+  <a href="#timeline">历史演变</a>
+  <a href="#patterns">纹样分类</a>
+  <a href="#charts">数据分析</a>
+  <a href="#colors">色彩分析</a>
+  <a href="#search">语义检索</a>
+  <a href="#qa">知识问答</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge">2025—2026</div>
+  <h1>敦煌文化遗产<br><span>智能知识库系统</span></h1>
+  <p class="hero-sub">基于 RAG 检索增强生成架构<br>构建涵盖 35 篇学术文献的敦煌藻井文化智能调研知识库<br>支持自然语言问答 · 语义化检索 · 交互动态可视化</p>
+  <div class="metric-strip">
+    <div class="metric-item"><div class="metric-num">35</div><div class="metric-label">学术文献收录</div></div>
+    <div class="metric-item"><div class="metric-num">4</div><div class="metric-label">纹样大类</div></div>
+    <div class="metric-item"><div class="metric-num">~8000</div><div class="metric-label">向量化文本块</div></div>
+    <div class="metric-item"><div class="metric-num">1000+</div><div class="metric-label">年历史跨度</div></div>
+    <div class="metric-item"><div class="metric-num">492</div><div class="metric-label">莫高窟洞窟</div></div>
+    <div class="metric-item"><div class="metric-num">8</div><div class="metric-label">矿物颜料种类</div></div>
+  </div>
+  <div class="hero-tech">
+    <span class="tech-pill">Python 3.x</span>
+    <span class="tech-pill">RAG 检索增强</span>
+    <span class="tech-pill">sentence-transformers</span>
+    <span class="tech-pill">MiniLM-L12-v2</span>
+    <span class="tech-pill">DeepSeek LLM</span>
+    <span class="tech-pill">Chart.js</span>
+    <span class="tech-pill">pypdf</span>
+    <span class="tech-pill">numpy + scikit-learn</span>
+  </div>
+</div>
+
+<div class="arch-section" id="arch">
+  <div class="arch-container">
+    <div class="section-label fade-in">01 · 技术架构</div>
+    <div class="section-header fade-in">
+      <div class="section-number">RAG</div>
+      <div><h2>检索增强生成（RAG）系统架构</h2><p>Knowledge Base → Semantic Retrieval → Context Injection → LLM Generation</p></div>
+    </div>
+    <div class="arch-flow fade-in">
+      <div class="arch-node data">35篇 PDF<br><small>学术文献</small></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node proc">pypdf<br><small>文本提取</small></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node proc">滑动窗口<br><small>500词/块</small></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node proc">MiniLM 向量<br><small>384维嵌入</small></div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node data">~8000 文本块<br><small>向量索引</small></div>
+    </div>
+    <div style="text-align:center;margin:.3rem 0 1.5rem;" class="fade-in">
+      <div class="arch-flow" style="gap:.8rem;">
+        <div class="arch-node input">用户提问<br><small>自然语言</small></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node proc">MiniLM 向量化<br><small>Query Embedding</small></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node proc">余弦相似度<br><small>Top-K 召回</small></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node proc">Prompt 注入<br><small>上下文拼接</small></div>
+        <div class="arch-arrow">→</div>
+        <div class="arch-node output">DeepSeek LLM<br><small>生成回答</small></div>
+      </div>
+    </div>
+    <div class="arch-desc fade-in">
+      <div class="arch-card"><h4>知识处理层</h4><p>使用 <code>pypdf</code> 批量提取 35 篇 PDF 学术文献，按 500 词/块滑动窗口分块，50词重叠保留跨块语义连贯。</p></div>
+      <div class="arch-card"><h4>向量检索层</h4><p>使用 <code>paraphrase-multilingual-MiniLM-L12-v2</code> 生成 384 维语义向量，通过 <code>cosine_similarity</code> 计算余弦相似度。</p></div>
+      <div class="arch-card"><h4>生成增强层</h4><p>将 Top-K 最相关文本块注入 Prompt，调用 <code>DeepSeek LLM</code> 生成有据可查的回答，有效降低幻觉，保证学术准确性。</p></div>
+      <div class="arch-card"><h4>可视化展示层</h4><p>使用 <code>Chart.js</code> 构建交互式信息图表，支持按朝代/类型筛选，高亮检索关键词，实时展示结构化数据。</p></div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider"/>
+
+<section id="timeline">
+  <div class="section-label fade-in">02 · 敦煌藻井历史演变</div>
+  <div class="section-header fade-in">
+    <div class="section-number">①</div>
+    <div><h2>1000+ 年演变脉络</h2><p>点击按钮按朝代筛选 · 从北朝到元代的图案演变</p></div>
+    <div class="section-tag">北朝→隋→盛唐→中晚唐→宋元</div>
+  </div>
+  <div class="filter-bar fade-in">
+    <span class="filter-label">朝代筛选：</span>
+    <button class="filter-btn active" data-era="all">全部</button>
+    <button class="filter-btn" data-era="北朝">北朝</button>
+    <button class="filter-btn" data-era="隋代">隋代</button>
+    <button class="filter-btn" data-era="初唐盛唐">初唐·盛唐</button>
+    <button class="filter-btn" data-era="中晚唐">中晚唐</button>
+    <button class="filter-btn" data-era="宋元">宋·西夏·元</button>
+  </div>
+  <div class="timeline" id="timelineList">
+    <div class="tl-item fade-in" data-era="北朝"><div class="tl-dot" style="background:#7BA7D4;box-shadow:0 0 0 2px #7BA7D4;"></div><div class="tl-card" style="border-left-color:#7BA7D4;"><div class="tl-era">北朝时期 · 5—6世纪</div><h3>初兴期：建筑结构主导</h3><p>藻井图案以建筑结构形态为主，北凉式样融入印度犍陀罗风格，莲花纹与几何纹交织。第302窟以印度风格边框为典型代表。</p><div class="tl-tags"><span class="tl-tag">北凉式样</span><span class="tl-tag">北魏第302窟</span><span class="tl-tag">印度风格</span><span class="tl-tag">莲花纹</span></div></div></div>
+    <div class="tl-item fade-in" data-era="隋代"><div class="tl-dot" style="background:#5A9E6E;box-shadow:0 0 0 2px #5A9E6E;"></div><div class="tl-card" style="border-left-color:#5A9E6E;"><div class="tl-era">隋代 · 581—618年</div><h3>过渡期：中西融合加速</h3><p>忍冬纹与联珠纹组合盛行，图案语言趋向丰富。隋代藻井三段式演变：早期莲花→中期忍冬联珠→晚期宝相花雏形。</p><div class="tl-tags"><span class="tl-tag">忍冬纹</span><span class="tl-tag">联珠纹</span><span class="tl-tag">三段式演变</span><span class="tl-tag">中西交汇</span></div></div></div>
+    <div class="tl-item fade-in" data-era="初唐盛唐"><div class="tl-dot" style="background:#C9A84C;box-shadow:0 0 0 2px #C9A84C;"></div><div class="tl-card" style="border-left-color:#C9A84C;"><div class="tl-era">初唐·盛唐 · 618—781年 ★鼎盛期★</div><h3>顶峰：复杂度最高的穹顶系统</h3><p>宝相花纹达到艺术顶峰，飞天、化生童子、伎乐天融入井心装饰。盛唐藻井层次最为繁复，色彩最为浓丽，代表敦煌藻井艺术的最高成就。</p><div class="tl-tags"><span class="tl-tag">宝相花纹</span><span class="tl-tag">飞天</span><span class="tl-tag">化生童子</span><span class="tl-tag">青金石蓝</span></div></div></div>
+    <div class="tl-item fade-in" data-era="中晚唐"><div class="tl-dot" style="background:#B5392C;box-shadow:0 0 0 2px #B5392C;"></div><div class="tl-card" style="border-left-color:#B5392C;"><div class="tl-era">中晚唐 · 781—907年</div><h3>转型期：宗教叙事装饰化</h3><p>藻井图案从宗教叙事转向纯粹装饰，吐蕃统治带来文明交融新元素，圆形构图增多，宝相花纹趋于程式化，整体风格趋向平面化。</p><div class="tl-tags"><span class="tl-tag">装饰化转向</span><span class="tl-tag">吐蕃影响</span><span class="tl-tag">圆形构图</span><span class="tl-tag">程式化</span></div></div></div>
+    <div class="tl-item fade-in" data-era="宋元"><div class="tl-dot" style="background:#3A7D7B;box-shadow:0 0 0 2px #3A7D7B;"></div><div class="tl-card" style="border-left-color:#3A7D7B;"><div class="tl-era">宋·西夏·元 · 960—1368年</div><h3>衰变期：脱离建筑结构</h3><p>藻井成为独立叙事空间，龙纹、曼荼罗变形图案出现。西夏龙纹融合藏传佛教特征，本土神话与佛教故事深度结合。</p><div class="tl-tags"><span class="tl-tag">龙纹</span><span class="tl-tag">曼荼罗</span><span class="tl-tag">密教影响</span><span class="tl-tag">独立叙事</span></div></div></div>
+  </div>
+</section>
+
+<div class="pat-section" id="patterns">
+  <div class="pat-container">
+    <div class="section-label fade-in">03 · 纹样分类体系</div>
+    <div class="section-header fade-in">
+      <div class="section-number">②</div>
+      <div><h2>4 大纹样类别 · 15+ 子类</h2><p>点击按钮按纹样类型筛选 · 核心寓意与文化内核</p></div>
+    </div>
+    <div class="filter-bar fade-in" style="background:#fffdf5;">
+      <span class="filter-label">类型筛选：</span>
+      <button class="filter-btn active" data-pat="all">全部</button>
+      <button class="filter-btn" data-pat="几何">几何纹</button>
+      <button class="filter-btn" data-pat="植物">植物纹</button>
+      <button class="filter-btn" data-pat="动物">动物纹</button>
+      <button class="filter-btn" data-pat="人物">人物纹</button>
+    </div>
+    <div class="pattern-grid" id="patternGrid">
+      <div class="pattern-card fade-in" data-pat="几何"><div class="pattern-icon">⬡</div><h3>几何纹</h3><div class="examples">联珠纹 · 菱格纹 · 回纹 · 万字纹</div><p>以抽象几何形态呈现宇宙秩序，源自古印度与波斯装饰传统，经丝路传入并中原化。联珠纹由萨珊波斯传入敦煌，成为标志性边饰元素。</p><div class="pattern-core">"对稳定与规律的形式化表达"</div></div>
+      <div class="pattern-card fade-in" data-pat="植物"><div class="pattern-icon">🌸</div><h3>植物纹</h3><div class="examples" style="color:#5A9E6E;">莲花 · 宝相花 · 卷草纹 · 忍冬纹</div><p>莲花象征佛陀净土；宝相花为盛唐理想化复合花卉，融合多种植物意象，达到艺术顶峰，是敦煌最具代表性的纹样之一。</p><div class="pattern-core" style="color:#5A9E6E;">"佛教象征与自然崇拜的融合"</div></div>
+      <div class="pattern-card fade-in" data-pat="动物"><div class="pattern-icon">🐉</div><h3>动物纹</h3><div class="examples" style="color:var(--red);">三兔共耳 · 龙 · 凤 · 迦陵频伽</div><p>三兔共耳以视错觉展示佛法轮回，龙凤结合本土图腾与佛教神兽概念。源于萨珊波斯，体现古代工匠的数学智慧与哲学思考。</p><div class="pattern-core" style="color:var(--red);">"本土神话与佛教故事的结合"</div></div>
+      <div class="pattern-card fade-in" data-pat="人物"><div class="pattern-icon">🧘</div><h3>人物纹</h3><div class="examples" style="color:var(--gold);">飞天 · 化生童子 · 伎乐天 · 菩萨像</div><p>飞天融合印度阿普萨拉天女与本土羽人概念，以飘带表现凌空飞翔的动感，象征超脱世俗的灵动之美，是敦煌最具辨识度的人物图像。</p><div class="pattern-core" style="color:var(--gold);">"佛教净土思想与世俗审美"</div></div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider"/>
+
+<section id="charts">
+  <div class="section-label fade-in">04 · 数据分析</div>
+  <div class="section-header fade-in">
+    <div class="section-number">③</div>
+    <div><h2>35 篇文献 · 多维度数据可视化</h2><p>雷达图 / 饼图 / 双轴对比图 · 基于文献内容量化统计</p></div>
+  </div>
+  <div class="chart-row">
+    <div class="chart-wrapper fade-in"><div class="chart-title">各朝代主要纹样出现频率（相对占比，满分100）</div><canvas id="radarChart" height="260"></canvas></div>
+    <div class="chart-wrapper fade-in"><div class="chart-title">35篇参考文献主题分布</div><canvas id="pieChart" height="260"></canvas></div>
+  </div>
+  <div style="margin-top:1.4rem;">
+    <div class="chart-wrapper fade-in"><div class="chart-title">各朝代洞窟数量与研究热度对比（柱状=洞窟数 / 折线=文献引用）</div><canvas id="barChart" height="180"></canvas></div>
+  </div>
+</section>
+
+<div class="color-section" id="colors">
+  <div class="color-container">
+    <div class="section-label fade-in">05 · 色彩分析</div>
+    <div class="section-header fade-in">
+      <div class="section-number" style="background:var(--teal);">④</div>
+      <div><h2 style="color:#fff;">敦煌矿物颜料色彩体系</h2><p style="color:rgba(255,255,255,.4);">点击色块查看颜料来源与文化含义 · 8种矿物颜料 · 时代演变趋势</p></div>
+    </div>
+    <div class="color-palette fade-in">
+      <div class="color-swatch"><div class="swatch-box" style="background:#C9A84C;" data-name="土黄 / 赭石" data-hex="#C9A84C" data-desc="含铁氧化矿物，国产，广泛用于早期藻井底色与线条，温暖沉稳，象征大地与安稳。"></div><div class="swatch-label">土黄<br>#C9A84C</div></div>
+      <div class="color-swatch"><div class="swatch-box" style="background:#B5392C;" data-name="朱砂红" data-hex="#B5392C" data-desc="硫化汞矿物，国产，色彩鲜艳持久。象征生命与神圣，盛唐时期使用最广泛，与青金石蓝形成强烈对比。"></div><div class="swatch-label">朱砂红<br>#B5392C</div></div>
+      <div class="color-swatch"><div class="swatch-box" style="background:#2C3D6B;" data-name="青金石蓝" data-hex="#2C3D6B" data-desc="含硫硅铝酸钠，进口自阿富汗，极为珍贵。代表天空与神圣，盛唐时期大量出现于井心，彰显皇家气派。"></div><div class="swatch-label">青金石蓝<br>#2C3D6B</div></div>
+      <div class="color-swatch"><div class="swatch-box" style="background:#3A7D7B;" data-name="孔雀石绿" data-hex="#3A7D7B" data-desc="碳酸铜矿物，国产，色感清冷沉稳。与朱砂红形成色彩对比，用于藻井外圈装饰，中晚唐使用渐多。"></div><div class="swatch-label">孔雀石绿<br>#3A7D7B</div></div>
+      <div class="color-swatch"><div class="swatch-box" style="background:#F5EDD6;border:1px solid #ccc;" data-name="铅白" data-hex="#F5EDD6" data-desc="碱式碳酸铅，用于提亮和打底。与朱砂混合调出肉色，是人物造型的重要辅助色。"></div><div class="swatch-label" style="color:rgba(255,255,255,.5);">铅白<br>#F5EDD6</div></div>
+      <div class="color-swatch"><div class="swatch-box" style="background:#1C1A16;border:1px solid #444;" data-name="墨黑" data-hex="#1C1A16" data-desc="炭黑或烟黑，用于线描勾勒，构成图案骨架，是最基础的表现手段，赋予图案明确的结构边界。"></div><div class="swatch-label" style="color:rgba(255,255,255,.5);">墨黑<br>#1C1A16</div></div>
+      <div class="color-swatch"><div class="swatch-box" style="background:#8B4513;" data-name="赭石" data-hex="#8B4513" data-desc="氧化铁颜料，色调温暖，用于人物肤色和建筑结构线条，是早期敦煌藻井的主色调之一。"></div><div class="swatch-label" style="color:rgba(255,255,255,.5);">赭石<br>#8B4513</div></div>
+      <div class="color-swatch"><div class="swatch-box" style="background:#9B59B6;" data-name="紫色" data-hex="#9B59B6" data-desc="朱砂与青金石混合，极为罕见。象征神秘与法力，西夏时期因密教影响偶尔出现，体现文明交融。"></div><div class="swatch-label" style="color:rgba(255,255,255,.5);">紫色<br>#9B59B6</div></div>
+    </div>
+    <div id="colorPopup" class="fade-in"><div class="popup-inner"><div id="popupSwatch" style=""></div><div><div id="popupName" style=""></div><div id="popupDesc" style=""></div></div></div></div>
+    <div class="color-chart-wrap fade-in" style="margin-top:1.6rem;"><div class="chart-wrapper"><div class="chart-title">各时期色彩使用强度分布（归一化得分，满分100）</div><canvas id="colorChart" height="190"></canvas></div></div>
+  </div>
+</div>
+
+<hr class="divider"/>
+
+<section id="search">
+  <div class="section-label fade-in">06 · 语义检索演示</div>
+  <div class="section-header fade-in">
+    <div class="section-number" style="background:var(--teal);">⑤</div>
+    <div><h2>基于向量的语义化知识检索</h2><p>输入关键词，模拟向量检索返回相关文献片段，含关键词高亮与相关度评分</p></div>
+  </div>
+  <div class="search-wrapper fade-in">
+    <div class="search-row">
+      <input class="search-box" id="searchInput" type="text" placeholder="输入关键词，如：宝相花、飞天、联珠纹、三兔共耳……"/>
+      <button class="search-btn" onclick="runSearch()">🔍 检索</button>
+    </div>
+    <div id="searchResults" class="search-results"></div>
+  </div>
+</section>
+
+<section id="qa">
+  <div class="section-label fade-in">07 · 知识问答 Demo</div>
+  <div class="section-header fade-in">
+    <div class="section-number" style="background:var(--teal);">⑥</div>
+    <div><h2>智能问答系统演示</h2><p>基于 35 篇文献构建的 RAG 知识库 · 自然语言提问 · 带来源标注</p></div>
+  </div>
+  <div class="qa-container fade-in">
+    <div class="qa-header">
+      <div class="qa-header-icon">🏛️</div>
+      <div class="qa-header-text"><h3>敦煌藻井知识库问答系统</h3><p>RAG · paraphrase-multilingual-MiniLM-L12-v2 · DeepSeek LLM</p></div>
+      <div class="qa-status" id="qaStatus">● 正在连接知识库…</div>
+    </div>
+    <div class="qa-preset">
+      <span class="qa-preset-label">预设问题（点击体验）：</span>
+      <button class="preset-btn" onclick="askPreset('宝相花纹在哪个时期发展到顶峰？有什么特征？')">宝相花纹顶峰</button>
+      <button class="preset-btn" onclick="askPreset('敦煌藻井使用了哪些矿物颜料？各有什么特点？')">矿物颜料</button>
+      <button class="preset-btn" onclick="askPreset('飞天图案的文化来源是什么？')">飞天来源</button>
+      <button class="preset-btn" onclick="askPreset('吐蕃统治时期对藻井图案有什么影响？')">吐蕃影响</button>
+      <button class="preset-btn" onclick="askPreset('三兔共耳图案的含义是什么？')">三兔共耳</button>
+      <button class="preset-btn" onclick="askPreset('敦煌藻井与印度穹顶画有什么关系？')">跨文化比较</button>
+    </div>
+    <div class="qa-messages" id="qaMessages">
+      <div class="msg msg-bot">
+        <div class="msg-avatar">🏛️</div>
+        <div class="msg-bubble">你好！我是基于敦煌藻井研究文献构建的知识问答助手。<br><br>知识库已加载 <strong>35 篇</strong>学术论文，覆盖北朝至元代约1000年的演变历史。<br><br>可点击上方<strong>预设问题</strong>快速体验，或直接输入问题。</div>
+      </div>
+    </div>
+    <div class="qa-input-row">
+      <input class="qa-input" id="qaInput" type="text" placeholder="输入你对敦煌藻井的问题……"/>
+      <button class="qa-send" id="qaSendBtn" onclick="sendQuestion()">发送</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p>敦煌文化遗产智能知识库系统</p>
+  <p style="margin-top:.4rem;">作者：<span>陈锦彤</span> &nbsp;|&nbsp; RAG · 语义检索 · 交互可视化 &nbsp;|&nbsp; 2025—2026</p>
+</footer>
+
+<script>
+/* ── 图表 ── */
+new Chart(document.getElementById('radarChart').getContext('2d'),{
+  type:'radar',
+  data:{
+    labels:['莲花纹','宝相花','忍冬纹','联珠纹','飞天纹','龙纹','几何纹'],
+    datasets:[
+      {label:'北朝',data:[80,10,30,55,15,5,70],borderColor:'#7BA7D4',backgroundColor:'rgba(123,167,212,.15)',borderWidth:2,pointRadius:4},
+      {label:'隋唐',data:[60,90,65,45,85,20,50],borderColor:'#C9A84C',backgroundColor:'rgba(201,168,76,.15)',borderWidth:2,pointRadius:4},
+      {label:'宋元',data:[40,30,20,30,30,80,35],borderColor:'#B5392C',backgroundColor:'rgba(181,57,44,.15)',borderWidth:2,pointRadius:4}
+    ]
+  },
+  options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:11},padding:14}}},scales:{r:{min:0,max:100,ticks:{stepSize:25,font:{size:10}},pointLabels:{font:{size:11}}}}}
+});
+
+new Chart(document.getElementById('pieChart').getContext('2d'),{
+  type:'doughnut',
+  data:{
+    labels:['历史演变研究（12篇）','文创设计应用（10篇）','色彩配置研究（6篇）','跨文化比较（4篇）','数字化设计（3篇）'],
+    datasets:[{data:[12,10,6,4,3],backgroundColor:['#2C3D6B','#5A9E6E','#C9A84C','#B5392C','#3A7D7B'],borderWidth:2,borderColor:'#fff'}]
+  },
+  options:{responsive:true,plugins:{legend:{position:'bottom',labels:{font:{size:11},padding:14}}},cutout:'55%'}
+});
+
+new Chart(document.getElementById('barChart').getContext('2d'),{
+  type:'bar',
+  data:{
+    labels:['北凉','北魏','西魏','北周','隋','初唐','盛唐','中唐','晚唐','五代','宋','西夏','元'],
+    datasets:[
+      {label:'现存洞窟数（估算）',data:[5,35,25,20,45,60,75,55,45,15,32,28,10],backgroundColor:'rgba(44,61,107,.75)',borderColor:'#2C3D6B',borderWidth:1,yAxisID:'y'},
+      {label:'文献引用次数（相对）',data:[2,8,5,4,18,22,30,20,15,5,8,6,3],type:'line',borderColor:'#C9A84C',backgroundColor:'rgba(201,168,76,.1)',borderWidth:2,pointRadius:4,fill:true,tension:0.4,yAxisID:'y2'}
+    ]
+  },
+  options:{responsive:true,plugins:{legend:{position:'top',labels:{font:{size:11}}}},scales:{x:{ticks:{font:{size:10}}},y:{position:'left',title:{display:true,text:'洞窟数',font:{size:10}}},y2:{position:'right',title:{display:true,text:'引用次数',font:{size:10}},grid:{drawOnChartArea:false}}}}
+});
+
+new Chart(document.getElementById('colorChart').getContext('2d'),{
+  type:'line',
+  data:{
+    labels:['北朝','隋','初唐','盛唐','中唐','晚唐','宋元'],
+    datasets:[
+      {label:'朱砂红',data:[40,50,65,80,70,55,30],borderColor:'#B5392C',backgroundColor:'rgba(181,57,44,.12)',fill:true,tension:0.4,borderWidth:2,pointRadius:4},
+      {label:'青金石蓝',data:[60,55,70,90,75,60,40],borderColor:'#4a6bbf',backgroundColor:'rgba(74,107,191,.12)',fill:true,tension:0.4,borderWidth:2,pointRadius:4},
+      {label:'孔雀石绿',data:[35,45,55,75,65,50,25],borderColor:'#3A7D7B',backgroundColor:'rgba(58,125,123,.12)',fill:true,tension:0.4,borderWidth:2,pointRadius:4},
+      {label:'土黄/金',data:[55,60,70,85,70,60,45],borderColor:'#C9A84C',backgroundColor:'rgba(201,168,76,.1)',fill:true,tension:0.4,borderWidth:2,pointRadius:4}
+    ]
+  },
+  options:{responsive:true,plugins:{legend:{position:'bottom',labels:{color:'rgba(255,255,255,.7)',font:{size:11}}}},scales:{x:{ticks:{color:'rgba(255,255,255,.55)',font:{size:10}},grid:{color:'rgba(255,255,255,.07)'}},y:{min:0,max:100,ticks:{color:'rgba(255,255,255,.55)',stepSize:25},grid:{color:'rgba(255,255,255,.07)'},title:{display:true,text:'使用强度（归一化）',color:'rgba(255,255,255,.45)',font:{size:10}}}}}
+});
+
+/* ── 筛选 ── */
+document.querySelectorAll('[data-era]').forEach(function(b){
+  b.addEventListener('click',function(){
+    document.querySelectorAll('[data-era]').forEach(function(x){x.classList.remove('active');});
+    this.classList.add('active');
+    var era=this.dataset.era;
+    document.querySelectorAll('#timelineList .tl-item').forEach(function(item){
+      item.classList.toggle('hidden',era!=='all'&&item.dataset.era!==era);
+    });
+  });
+});
+
+document.querySelectorAll('[data-pat]').forEach(function(b){
+  b.addEventListener('click',function(){
+    document.querySelectorAll('[data-pat]').forEach(function(x){x.classList.remove('active');});
+    this.classList.add('active');
+    var pat=this.dataset.pat;
+    document.querySelectorAll('#patternGrid .pattern-card').forEach(function(card){
+      card.classList.toggle('hidden',pat!=='all'&&card.dataset.pat!==pat);
+    });
+  });
+});
+
+/* ── 色块弹窗 ── */
+document.querySelectorAll('.swatch-box').forEach(function(box){
+  box.addEventListener('click',function(){
+    var popup=document.getElementById('colorPopup');
+    popup.style.display='block';
+    popup.classList.add('visible');
+    document.getElementById('popupSwatch').style.background=this.dataset.hex;
+    document.getElementById('popupSwatch').style.border='2px solid rgba(255,255,255,.2)';
+    document.getElementById('popupName').textContent=this.dataset.name+'  '+this.dataset.hex;
+    document.getElementById('popupDesc').textContent=this.dataset.desc;
+  });
+});
+
+/* ══════════════════════════════════════════════════════════════
+   真实 API 调用 — 语义检索 & RAG 问答
+   ══════════════════════════════════════════════════════════════ */
+
+var API_BASE = window.location.origin + '/api';
+
+/* 页面加载时检查知识库状态 */
+fetch(API_BASE + '/status')
+  .then(function(r){ return r.json(); })
+  .then(function(data){
+    var el = document.getElementById('qaStatus');
+    if (data.status === 'ready') {
+      el.textContent = '● 知识库就绪 · ' + data.pdf_count + '篇文献 · ' + data.chunk_count + '个文本块';
+    } else {
+      el.textContent = '● 知识库加载中…';
+      el.classList.add('loading');
+    }
+  })
+  .catch(function(){
+    var el = document.getElementById('qaStatus');
+    el.textContent = '● 离线模式（演示数据）';
+    el.classList.add('loading');
+  });
+
+/* 关键词高亮 */
+function highlight(text, q) {
+  if (!q) return text;
+  var r = text;
+  q.trim().split(/\s+/).filter(function(w){return w.length > 0;}).forEach(function(w){
+    r = r.replace(new RegExp(w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi'),
+      function(m){ return '<mark>' + m + '</mark>'; });
+  });
+  return r;
+}
+
+/* ── 语义检索（真实 API）── */
+function runSearch() {
+  var q = document.getElementById('searchInput').value.trim();
+  var c = document.getElementById('searchResults');
+  if (!q) { c.innerHTML = '<div style="color:#aaa;font-size:.82rem;padding:.4rem 0;">请输入关键词</div>'; return; }
+
+  c.innerHTML = '<div style="color:var(--gold);font-size:.82rem;padding:.4rem 0;">🔍 正在检索…</div>';
+
+  fetch(API_BASE + '/search', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query: q, top_k: 5 })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(data){
+    if (!data.results || data.results.length === 0) {
+      c.innerHTML = '<div style="color:#aaa;font-size:.82rem;padding:.4rem 0;">未找到相关内容，请尝试其他关键词</div>';
+      return;
+    }
+    c.innerHTML = data.results.map(function(r){
+      var scorePct = Math.round(r.score * 100);
+      var srcClean = r.source.replace(/_/g, ' ').replace(/\.pdf$/i, '');
+      var preview = r.document.length > 200 ? r.document.substring(0, 200) + '…' : r.document;
+      return '<div class="r-item">' +
+        '<div class="r-source">📄 ' + srcClean + '<span class="r-score">相关度 ' + scorePct + '%</span></div>' +
+        '<div>' + highlight(preview, q) + '</div>' +
+        '</div>';
+    }).join('');
+  })
+  .catch(function(){
+    c.innerHTML = '<div style="color:#aaa;font-size:.82rem;padding:.4rem 0;">⚠️ 无法连接到后端服务，请确认 API 服务器已启动</div>';
+  });
+}
+
+document.getElementById('searchInput').addEventListener('keydown', function(e){ if(e.key==='Enter') runSearch(); });
+
+/* ── 知识问答（真实 RAG API）── */
+function askPreset(q){ document.getElementById('qaInput').value = q; sendQuestion(); }
+
+function sendQuestion() {
+  var input = document.getElementById('qaInput');
+  var btn = document.getElementById('qaSendBtn');
+  var q = input.value.trim();
+  if (!q || btn.disabled) return;
+
+  var msgs = document.getElementById('qaMessages');
+
+  // 用户消息气泡
+  var userDiv = document.createElement('div');
+  userDiv.className = 'msg msg-user';
+  userDiv.innerHTML = '<div class="msg-avatar">👤</div><div class="msg-bubble">' + q.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>';
+  msgs.appendChild(userDiv);
+  input.value = '';
+  btn.disabled = true;
+  msgs.scrollTop = msgs.scrollHeight;
+
+  // 加载指示器
+  var typingDiv = document.createElement('div');
+  typingDiv.className = 'msg msg-bot';
+  typingDiv.innerHTML = '<div class="msg-avatar">🏛️</div><div class="msg-bubble"><div class="typing-indicator"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div></div>';
+  msgs.appendChild(typingDiv);
+  msgs.scrollTop = msgs.scrollHeight;
+
+  // 调用 RAG API
+  fetch(API_BASE + '/ask', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ question: q, top_k: 5, use_llm: true })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(data){
+    msgs.removeChild(typingDiv);
+
+    var botDiv = document.createElement('div');
+    botDiv.className = 'msg msg-bot';
+
+    var answerHtml = (data.answer || '未获取到回答').replace(/\n/g, '<br>');
+    var sourcesHtml = '';
+    if (data.sources && data.sources.length > 0) {
+      sourcesHtml = '<br>' + data.sources.map(function(s){
+        return '<span class="source-tag">📄 ' + s.replace(/_/g, ' ').replace(/\.pdf$/i, '') + '</span>';
+      }).join(' ');
+    }
+
+    botDiv.innerHTML = '<div class="msg-avatar">🏛️</div><div class="msg-bubble">' +
+      answerHtml + sourcesHtml + '</div>';
+    msgs.appendChild(botDiv);
+    msgs.scrollTop = msgs.scrollHeight;
+    btn.disabled = false;
+  })
+  .catch(function(){
+    msgs.removeChild(typingDiv);
+    var botDiv = document.createElement('div');
+    botDiv.className = 'msg msg-bot';
+    botDiv.innerHTML = '<div class="msg-avatar">🏛️</div><div class="msg-bubble">' +
+      '⚠️ 无法连接到后端服务。<br><br>请确认已通过 <code style="background:var(--cream);padding:0 4px;border-radius:3px;">python run.py</code> 启动 API 服务器。<br><br>建议尝试以下<strong>预设问题</strong>：<br>• 宝相花纹顶峰<br>• 矿物颜料<br>• 飞天来源<br>• 吐蕃影响<br>• 三兔共耳<br>• 跨文化比较</div>';
+    msgs.appendChild(botDiv);
+    msgs.scrollTop = msgs.scrollHeight;
+    btn.disabled = false;
+  });
+}
+
+document.getElementById('qaInput').addEventListener('keydown', function(e){ if(e.key==='Enter') sendQuestion(); });
+
+/* ── 滚动动画 ── */
+var io = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('visible'); });
+}, {threshold:0.1});
+document.querySelectorAll('.fade-in').forEach(function(el){ io.observe(el); });
+</script>
+</body>
+</html>

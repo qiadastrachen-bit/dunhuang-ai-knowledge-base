@@ -1,0 +1,30 @@
+# 敦煌文化遗产智能知识库系统 — 依赖清单
+# 安装方法：pip install -r requirements.txt
+
+# PDF 处理
+pypdf>=3.0.0
+
+# 向量化与语义搜索
+sentence-transformers>=2.2.0
+
+# 数值计算
+numpy>=1.24.0
+
+# 机器学习工具
+scikit-learn>=1.2.0
+
+# 配置文件
+pyyaml>=6.0
+
+# Web 界面
+flask>=3.0.0
+flask-cors>=4.0.0
+
+# Streamlit 管理后台（可选）
+streamlit>=1.28.0
+
+# 数据可视化
+plotly>=5.18.0
+
+# OpenAI 兼容接口（可选，用于 LLM 生成）
+openai>=1.0.0
