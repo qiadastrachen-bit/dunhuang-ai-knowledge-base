@@ -12,9 +12,9 @@
 
 ## 项目简介
 
-敦煌文化遗产智能知识库系统是一个面向**敦煌学研究**的智能问答平台，旨在解决文化资源分散、传统检索方式无法理解语义关联的核心痛点。
+本人在学习人工智能与自然语言处理的过程中，独立完成了这个敦煌文化遗产智能知识库系统。系统收录了 **35 篇**敦煌藻井相关的学术论文，通过 RAG（检索增强生成）技术，支持自然语言问答和语义检索。
 
-系统收录了 **35 篇** 敦煌藻井相关学术论文，覆盖北朝至元代约 **1000 年** 的艺术演变，用户可通过自然语言对话方式，便捷获取敦煌艺术的结构化知识。每条回答均标注文献来源，确保学术严谨性。
+作为一项学习实践作品，知识库的内容基于学术文献构建，力求数据的准确性与严谨性，但受限于个人的学识和经验，可能存在不够准确或不够全面的地方。如有疏漏，恳请各位前辈和同学指教，非常欢迎交流学习。
 
 > ⚡ **核心特性**：语义理解检索（非关键词匹配）· 来源可追溯 · 交互式界面 · 可本地部署
 
@@ -26,12 +26,12 @@
 |---------|---------|
 | **敦煌学研究者** | 快速检索相关文献片段，辅助论文写作 |
 | **艺术史学生** | 通过问答了解敦煌艺术演变脉络 |
-| **博物馆/文化机构** | 为公众提供敦煌文化的互动式学习工具 |
-| **AI/NLP 开发者** | 参考 RAG 架构的工程实现 |
+| **文化爱好者** | 以交互方式了解敦煌文化知识 |
+| **AI/NLP 学习者** | 参考 RAG 架构的入门级工程实现 |
 
 ---
 
-## 功能说明
+## 核心功能
 
 ### 💬 智能问答
 - 对话式交互界面，支持多轮追问
@@ -49,6 +49,11 @@
 - 各朝代藻井演变趋势图
 - 敦煌矿物颜料色彩分析
 - 知识库文献统计分布
+
+### 🎨 敦煌风格前端
+- 采用敦煌壁画金/靛蓝/米色配色
+- 滚动动画与交互反馈
+- 响应式布局，适配不同屏幕
 
 ### 🔧 技术特性
 - **向量模型**：paraphrase-multilingual-MiniLM-L12-v2（384 维，50+ 语言）
@@ -92,8 +97,10 @@
 | 语义检索 | NumPy + Scikit-learn | 余弦相似度 |
 | LLM 接口 | OpenAI SDK | 兼容 DeepSeek / 本地模型 |
 | PDF 处理 | pypdf | 批量文本提取 |
-| Web 界面 | Streamlit | Python 快速 UI 框架 |
-| 可视化 | Plotly | 交互式图表 |
+| Web 后端 | Flask + flask-cors | RESTful API |
+| 前端界面 | HTML + CSS + JS | 敦煌风格交互界面 |
+| 管理后台 | Streamlit | 数据看板与内容管理 |
+| 可视化 | Plotly + Chart.js | 交互式图表 |
 | 配置管理 | PyYAML | 集中式配置 |
 
 ---
@@ -109,7 +116,7 @@
 
 ```bash
 # 1. 克隆项目
-git clone https://github.com/your-username/dunhuang-knowledge-base.git
+git clone https://github.com/qiadastrachen-bit/dunhuang-knowledge-base.git
 cd dunhuang-knowledge-base
 
 # 2. 创建虚拟环境（推荐）
@@ -133,7 +140,7 @@ python run.py
 1. 解析 `data/raw/` 下的所有 PDF 文件
 2. 按滑动窗口（500 字/块，50 字重叠）切分文本
 3. 生成向量嵌入并缓存到 `data/processed/`
-4. 启动 Streamlit 交互界面
+4. 启动 Web 前端界面（默认端口 5000）
 
 > ⏱️ 首次构建约需 3-5 分钟（取决于 PDF 数量和硬件性能），后续启动秒级加载。
 
@@ -146,8 +153,7 @@ python run.py
 export DUNHUANG_API_KEY="your-api-key"  # macOS/Linux
 set DUNHUANG_API_KEY=your-api-key       # Windows CMD
 
-# 方式二：在 Streamlit 侧边栏输入
-# 启动后在界面左下角的 API Key 输入框中填入
+# 方式二：在 config/settings.yaml 中配置
 ```
 
 支持 DeepSeek、OpenAI 及任何 OpenAI 兼容接口。
@@ -159,26 +165,54 @@ set DUNHUANG_API_KEY=your-api-key       # Windows CMD
 ### 启动
 
 ```bash
-python run.py
+python run.py              # Web 模式（默认，Flask + 前端，端口 5000）
+python run.py --mode ui    # Streamlit 管理后台
+python run.py --mode api   # 仅 API 服务器
+python run.py --port 8080  # 自定义端口
 ```
 
-浏览器会自动打开 `http://localhost:8501`。
-
 ### 界面导航
+
+**Web 前端（主界面）：**
+
+| 页面区域 | 功能 |
+|---------|------|
+| 🏠 Hero 首屏 | 项目介绍、数据概览、引导入口 |
+| 🏗️ 技术架构 | RAG 流程与技术栈说明 |
+| 📜 历史演变 | 各朝代藻井纹样发展概览 |
+| 🎨 纹样分类 | 4 大类纹样体系展示 |
+| 📊 数据分析 | 交互式图表可视化 |
+| 🎨 色彩分析 | 敦煌矿物颜料介绍 |
+| 🔍 语义检索 | 自然语言文献搜索 |
+| 💬 知识问答 | RAG 智能问答 |
+
+**Streamlit 管理后台：**
 
 | 页面 | 功能 |
 |------|------|
 | 🏠 首页 | 项目介绍、引导示例、数据概览 |
 | 💬 智能问答 | 对话式 RAG 问答 |
 | 🔍 语义检索 | 文献片段搜索 |
-| 📊 数据看板 | 可视化图表 |
+| 📊 数据看板 | Plotly 可视化图表 |
 | ℹ️ 关于 | 项目背景与技术架构 |
 
 ### 快速体验
 
-1. 打开首页，点击任意示例问题
-2. 系统自动跳转到智能问答并填入问题
-3. 查看回答及来源标注
+1. 打开 `http://localhost:5000`，浏览首页各区域
+2. 在「语义检索」区域输入关键词（如"宝相花"、"藻井"）
+3. 在「知识问答」区域提问，查看回答及来源标注
+
+---
+
+## API 接口
+
+Flask 后端提供以下 RESTful API：
+
+| 接口 | 方法 | 说明 |
+|------|------|------|
+| `/api/status` | GET | 知识库状态（PDF 数量、文本块数量、索引状态） |
+| `/api/search` | POST | 语义检索（body: `{"query": "...", "top_k": 5}`） |
+| `/api/ask` | POST | RAG 问答（body: `{"question": "...", "top_k": 5, "use_llm": false}`） |
 
 ---
 
@@ -186,6 +220,9 @@ python run.py
 
 ```
 dunhuang-knowledge-base/
+├── api/
+│   ├── __init__.py           # API 模块初始化
+│   └── server.py             # Flask 后端（RESTful API + 静态文件服务）
 ├── config/
 │   ├── __init__.py           # 配置加载工具
 │   └── settings.yaml         # 集中配置文件
@@ -197,14 +234,17 @@ dunhuang-knowledge-base/
 │   └── rag_engine.py         # RAG 检索增强生成
 ├── ui/
 │   ├── __init__.py
-│   └── app.py                # Streamlit 主界面
+│   ├── app.py                # Streamlit 管理后台
+│   └── templates/
+│       └── demo.html         # Web 前端主页面
 ├── utils/
 │   ├── __init__.py
 │   └── logger.py             # 日志工具
 ├── data/
 │   ├── raw/                  # PDF 文献（需自行放入）
 │   └── processed/            # 向量索引缓存（自动生成）
-├── docs/                     # 项目文档
+├── docs/
+│   └── screenshots/          # 项目截图
 ├── .gitignore
 ├── requirements.txt
 ├── run.py                    # 一键启动入口
@@ -215,15 +255,19 @@ dunhuang-knowledge-base/
 
 ## 项目截图
 
-> 📸 使用时替换为实际截图
+> 📸 使用时替换为实际截图，截图请放入 `docs/screenshots/` 目录
 
-| 首页 | 智能问答 |
+| 首页 | 知识问答 |
 |------|---------|
-| ![首页](docs/screenshots/home.png) | ![智能问答](docs/screenshots/qa.png) |
+| ![首页](docs/screenshots/screenshot_home.png) | ![知识问答](docs/screenshots/screenshot_chat.png) |
 
-| 语义检索 | 数据看板 |
+| 语义检索 | 色彩分析 |
 |---------|---------|
-| ![语义检索](docs/screenshots/search.png) | ![数据看板](docs/screenshots/dashboard.png) |
+| ![语义检索](docs/screenshots/screenshot_search.png) | ![色彩分析](docs/screenshots/screenshot_color.png) |
+
+| 数据看板 | |
+|---------|---|
+| ![数据看板](docs/screenshots/screenshot_data.png) | |
 
 ---
 
@@ -236,7 +280,9 @@ dunhuang-knowledge-base/
 - [x] 语义向量检索引擎（余弦相似度 Top-K）
 - [x] RAG 检索增强生成（支持 OpenAI 兼容 API）
 - [x] 向量索引持久化与快速加载
-- [x] Streamlit 交互界面（问答 / 检索 / 可视化）
+- [x] Flask API 后端（RESTful 接口）
+- [x] 敦煌风格 Web 前端（语义检索 + 知识问答）
+- [x] Streamlit 管理后台（数据看板 + 可视化）
 - [x] YAML 集中配置管理
 - [x] 引导示例与来源标注
 
@@ -253,7 +299,9 @@ dunhuang-knowledge-base/
 
 ## 作者
 
-**陈锦彤** — 独立完成系统设计、开发与实现
+**陈锦彤** — 在校大学生，本人在学习过程中独立完成了本项目的系统设计、开发与实现。
+
+本项目作为学习实践作品，如有不足之处，恳请各位前辈和同学不吝指教，欢迎交流学习。
 
 ---
 
