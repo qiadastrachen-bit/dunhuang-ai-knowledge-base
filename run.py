@@ -26,6 +26,29 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 
+# ── 自动加载 .env 环境变量 ──────────────────────────────────
+def load_dotenv():
+    """从项目根目录的 .env 文件加载环境变量（如果存在）。"""
+    env_path = os.path.join(PROJECT_ROOT, ".env")
+    if not os.path.exists(env_path):
+        return
+    with open(env_path, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, _, value = line.partition("=")
+            key = key.strip()
+            value = value.strip()
+            # 不覆盖已存在的环境变量
+            if key and key not in os.environ:
+                os.environ[key] = value
+    print("  环境变量已从 .env 加载")
+
+
+load_dotenv()
+
+
 def ensure_config():
     """确保配置文件存在并加载。"""
     from config import get_config

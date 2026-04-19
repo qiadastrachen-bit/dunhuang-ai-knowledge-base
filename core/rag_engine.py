@@ -43,8 +43,9 @@ class RAGEngine:
         self.vector_engine = vector_engine
         self.system_prompt = system_prompt
         self.llm_provider = llm_provider
-        self.llm_base_url = llm_base_url
-        self.llm_model = llm_model
+        # 环境变量优先覆盖配置文件
+        self.llm_base_url = os.environ.get("DUNHUANG_API_BASE", llm_base_url)
+        self.llm_model = os.environ.get("DUNHUANG_MODEL", llm_model)
         self.llm_max_tokens = llm_max_tokens
         self.llm_temperature = llm_temperature
 
@@ -181,6 +182,9 @@ class RAGEngine:
     def _summarize_without_llm(self, results: List[dict]) -> str:
         """无 LLM 时的简单摘要：拼接检索结果。
 
+        输出 Markdown 格式（Streamlit 的 st.markdown 原生支持渲染）。
+        Flask 前端 demo.html 会通过正则将 Markdown 转为 HTML。
+
         Args:
             results: 检索结果列表。
 
@@ -200,6 +204,8 @@ class RAGEngine:
     def _summarize_with_context(self, question: str, context: str) -> str:
         """有上下文但无 LLM 时的增强摘要。
 
+        输出 Markdown 格式。Flask 前端会通过正则将 Markdown 转为 HTML。
+
         Args:
             question: 用户问题。
             context: RAG 上下文。
@@ -207,10 +213,27 @@ class RAGEngine:
         Returns:
             包含上下文信息的摘要文本。
         """
+        # 从上下文中提取文献编号，构建来源索引
+        import re
+        ref_pattern = re.compile(r'【参考文献 (\d+)】([^\n（（]+)')
+        refs_found = ref_pattern.findall(context)
+        ref_index = {}
+        for num, name in refs_found:
+            ref_index[num] = name.strip().rstrip('_').strip()
+
+        # 构建来源说明
+        source_notes = ""
+        if ref_index:
+            source_lines = []
+            for num in sorted(ref_index.keys(), key=int):
+                source_lines.append(f"  【{num}】{ref_index[num]}")
+            source_notes = "\n\n**📎 参考文献说明：**\n" + "\n".join(source_lines)
+
         lines = [
             f"**问题：** {question}\n",
             "**以下内容来自知识库检索结果：**\n",
             context[:2000],
+            source_notes,
             "\n\n> 💡 *提示：安装 openai 库并配置 DUNHUANG_API_KEY 环境变量后，"
             "系统将自动切换为 AI 生成模式。当前为检索摘要模式。*",
         ]

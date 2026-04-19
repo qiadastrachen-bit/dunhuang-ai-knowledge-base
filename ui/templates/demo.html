@@ -71,7 +71,7 @@
     .tl-tag{font-size:.7rem;padding:.18rem .5rem;border-radius:8px;background:var(--cream);color:var(--indigo);border:1px solid #d9cdb0}
     .pat-section{background:var(--cream);max-width:100%;padding:4rem 0}
     .pat-container{max-width:1100px;margin:0 auto;padding:0 1.5rem}
-    .pattern-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:1.1rem}
+    .pattern-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.1rem}
     .pattern-card{background:#fff;border-radius:12px;padding:1.3rem;box-shadow:0 2px 12px rgba(0,0,0,.07);border-top:4px solid var(--gold);transition:transform .2s,opacity .3s}
     .pattern-card:hover{transform:translateY(-5px)}
     .pattern-card.hidden{opacity:0;pointer-events:none;display:none}
@@ -84,6 +84,27 @@
     .pattern-card .examples{font-size:.75rem;color:var(--gold);margin-bottom:.4rem}
     .pattern-card p{font-size:.83rem;color:#555;line-height:1.7}
     .pattern-core{margin-top:.65rem;font-size:.75rem;color:var(--teal);font-style:italic}
+    /* 子类标签 */
+    .sub-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.7rem;padding-top:.7rem;border-top:1px dashed rgba(0,0,0,.1)}
+    .sub-tag{font-size:.72rem;padding:.25rem .6rem;border-radius:20px;cursor:pointer;transition:all .2s;border:1px solid rgba(0,0,0,.12);background:#fefcf3;color:#666;user-select:none}
+    .sub-tag:hover{background:var(--gold);color:#fff;border-color:var(--gold);transform:scale(1.05)}
+    .sub-tag.active{background:var(--gold);color:#fff;border-color:var(--gold)}
+    .sub-tag[data-cat="植物"]{border-color:rgba(90,158,110,.3);color:#3d7a4f}
+    .sub-tag[data-cat="植物"]:hover,.sub-tag[data-cat="植物"].active{background:#5A9E6E;color:#fff;border-color:#5A9E6E}
+    .sub-tag[data-cat="动物"]{border-color:rgba(181,57,44,.2);color:var(--red)}
+    .sub-tag[data-cat="动物"]:hover,.sub-tag[data-cat="动物"].active{background:var(--red);color:#fff;border-color:var(--red)}
+    .sub-tag[data-cat="人物"]{border-color:rgba(201,168,76,.3);color:#9a7c20}
+    .sub-tag[data-cat="人物"]:hover,.sub-tag[data-cat="人物"].active{background:var(--gold);color:#fff;border-color:var(--gold)}
+    .sub-tag[data-cat="几何"]{border-color:rgba(107,140,190,.3);color:#4a6fa0}
+    .sub-tag[data-cat="几何"]:hover,.sub-tag[data-cat="几何"].active{background:#6B8CBE;color:#fff;border-color:#6B8CBE}
+    /* 子类弹出详情 */
+    .sub-detail{margin-top:.5rem;padding:.6rem .8rem;background:#fefcf3;border-radius:8px;font-size:.78rem;line-height:1.6;color:#555;display:none;border-left:3px solid var(--gold);animation:fadeUp .25s ease}
+    .sub-detail.show{display:block}
+    .sub-detail .sub-detail-title{font-weight:600;color:var(--indigo);margin-bottom:.2rem}
+    .sub-detail[data-cat="植物"]{border-left-color:#5A9E6E}
+    .sub-detail[data-cat="动物"]{border-left-color:var(--red)}
+    .sub-detail[data-cat="人物"]{border-left-color:var(--gold)}
+    .sub-detail[data-cat="几何"]{border-left-color:#6B8CBE}
     .chart-row{display:grid;grid-template-columns:1fr 1fr;gap:1.4rem}
     @media(max-width:700px){.chart-row{grid-template-columns:1fr}}
     .chart-wrapper{background:#fff;border-radius:12px;padding:1.8rem;box-shadow:0 2px 16px rgba(0,0,0,.08)}
@@ -126,6 +147,7 @@
     .msg-user .msg-bubble{background:var(--indigo);color:#fff;border-radius:12px 4px 12px 12px}
     .msg-bot .msg-bubble{background:#f4f0e8;color:#333;border-radius:4px 12px 12px 12px;border:1px solid #e5ddc8}
     .msg-bot .msg-bubble strong{color:var(--indigo)}
+    .msg-bot .msg-bubble blockquote{border-left:3px solid var(--gold);margin:.4rem 0;padding:.3rem .7rem;background:rgba(201,168,76,.06);border-radius:0 6px 6px 0;font-size:.82rem;color:#666}
     .source-tag{display:inline-block;font-size:.67rem;padding:.1rem .4rem;background:var(--cream);border:1px solid #d0c5a8;border-radius:6px;color:var(--teal);margin-top:.4rem}
     .typing-indicator{display:flex;gap:4px;align-items:center;padding:.25rem 0}
     .typing-dot{width:7px;height:7px;border-radius:50%;background:var(--gold);opacity:.4;animation:bounce 1.2s ease-in-out infinite}
@@ -276,10 +298,58 @@
       <button class="filter-btn" data-pat="人物">人物纹</button>
     </div>
     <div class="pattern-grid" id="patternGrid">
-      <div class="pattern-card fade-in" data-pat="几何"><div class="pattern-icon">⬡</div><h3>几何纹</h3><div class="examples">联珠纹 · 菱格纹 · 回纹 · 万字纹</div><p>以抽象几何形态呈现宇宙秩序，源自古印度与波斯装饰传统，经丝路传入并中原化。联珠纹由萨珊波斯传入敦煌，成为标志性边饰元素。</p><div class="pattern-core">"对稳定与规律的形式化表达"</div></div>
-      <div class="pattern-card fade-in" data-pat="植物"><div class="pattern-icon">🌸</div><h3>植物纹</h3><div class="examples" style="color:#5A9E6E;">莲花 · 宝相花 · 卷草纹 · 忍冬纹</div><p>莲花象征佛陀净土；宝相花为盛唐理想化复合花卉，融合多种植物意象，达到艺术顶峰，是敦煌最具代表性的纹样之一。</p><div class="pattern-core" style="color:#5A9E6E;">"佛教象征与自然崇拜的融合"</div></div>
-      <div class="pattern-card fade-in" data-pat="动物"><div class="pattern-icon">🐉</div><h3>动物纹</h3><div class="examples" style="color:var(--red);">三兔共耳 · 龙 · 凤 · 迦陵频伽</div><p>三兔共耳以视错觉展示佛法轮回，龙凤结合本土图腾与佛教神兽概念。源于萨珊波斯，体现古代工匠的数学智慧与哲学思考。</p><div class="pattern-core" style="color:var(--red);">"本土神话与佛教故事的结合"</div></div>
-      <div class="pattern-card fade-in" data-pat="人物"><div class="pattern-icon">🧘</div><h3>人物纹</h3><div class="examples" style="color:var(--gold);">飞天 · 化生童子 · 伎乐天 · 菩萨像</div><p>飞天融合印度阿普萨拉天女与本土羽人概念，以飘带表现凌空飞翔的动感，象征超脱世俗的灵动之美，是敦煌最具辨识度的人物图像。</p><div class="pattern-core" style="color:var(--gold);">"佛教净土思想与世俗审美"</div></div>
+      <!-- 几何纹 -->
+      <div class="pattern-card fade-in" data-pat="几何">
+        <div class="pattern-icon">⬡</div><h3>几何纹</h3>
+        <p>以抽象几何形态呈现宇宙秩序，源自古印度与波斯装饰传统，经丝路传入并中原化。联珠纹由萨珊波斯传入敦煌，成为标志性边饰元素。</p>
+        <div class="pattern-core">"对稳定与规律的形式化表达"</div>
+        <div class="sub-tags">
+          <span class="sub-tag" data-cat="几何" data-sub="联珠纹">联珠纹</span>
+          <span class="sub-tag" data-cat="几何" data-sub="菱格纹">菱格纹</span>
+          <span class="sub-tag" data-cat="几何" data-sub="回纹">回纹</span>
+          <span class="sub-tag" data-cat="几何" data-sub="万字纹">万字纹</span>
+        </div>
+        <div class="sub-detail" id="subDetail-几何"></div>
+      </div>
+      <!-- 植物纹 -->
+      <div class="pattern-card fade-in" data-pat="植物">
+        <div class="pattern-icon">🌸</div><h3>植物纹</h3>
+        <p>莲花象征佛陀净土；宝相花为盛唐理想化复合花卉，融合多种植物意象，达到艺术顶峰，是敦煌最具代表性的纹样之一。</p>
+        <div class="pattern-core" style="color:#5A9E6E;">"佛教象征与自然崇拜的融合"</div>
+        <div class="sub-tags">
+          <span class="sub-tag" data-cat="植物" data-sub="莲花纹">莲花纹</span>
+          <span class="sub-tag" data-cat="植物" data-sub="宝相花纹">宝相花纹</span>
+          <span class="sub-tag" data-cat="植物" data-sub="卷草纹">卷草纹</span>
+          <span class="sub-tag" data-cat="植物" data-sub="忍冬纹">忍冬纹</span>
+          <span class="sub-tag" data-cat="植物" data-sub="茶花纹">茶花纹</span>
+        </div>
+        <div class="sub-detail" id="subDetail-植物"></div>
+      </div>
+      <!-- 动物纹 -->
+      <div class="pattern-card fade-in" data-pat="动物">
+        <div class="pattern-icon">🐉</div><h3>动物纹</h3>
+        <p>三兔共耳以视错觉展示佛法轮回，龙凤结合本土图腾与佛教神兽概念。源于萨珊波斯，体现古代工匠的数学智慧与哲学思考。</p>
+        <div class="pattern-core" style="color:var(--red);">"本土神话与佛教故事的结合"</div>
+        <div class="sub-tags">
+          <span class="sub-tag" data-cat="动物" data-sub="三兔共耳">三兔共耳</span>
+          <span class="sub-tag" data-cat="动物" data-sub="龙纹">龙纹</span>
+          <span class="sub-tag" data-cat="动物" data-sub="凤纹">凤纹</span>
+          <span class="sub-tag" data-cat="动物" data-sub="迦陵频伽">迦陵频伽</span>
+        </div>
+        <div class="sub-detail" id="subDetail-动物"></div>
+      </div>
+      <!-- 人物纹 -->
+      <div class="pattern-card fade-in" data-pat="人物">
+        <div class="pattern-icon">🧘</div><h3>人物纹</h3>
+        <p>飞天融合印度阿普萨拉天女与本土羽人概念，以飘带表现凌空飞翔的动感，象征超脱世俗的灵动之美，是敦煌最具辨识度的人物图像。</p>
+        <div class="pattern-core" style="color:var(--gold);">"佛教净土思想与世俗审美"</div>
+        <div class="sub-tags">
+          <span class="sub-tag" data-cat="人物" data-sub="飞天">飞天</span>
+          <span class="sub-tag" data-cat="人物" data-sub="化生童子">化生童子</span>
+          <span class="sub-tag" data-cat="人物" data-sub="伎乐天">伎乐天</span>
+        </div>
+        <div class="sub-detail" id="subDetail-人物"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -452,6 +522,46 @@ document.querySelectorAll('[data-pat]').forEach(function(b){
   });
 });
 
+// ── 子类标签交互 ──────────────────────────────────────
+var subInfo={
+  '联珠纹':{period:'北朝—盛唐',desc:'由萨珊波斯传入，以圆珠串联成环状骨架，内填禽兽或花卉。隋代最盛，是藻井边饰的核心纹样，体现丝路文化交流。'},
+  '菱格纹':{period:'北朝—宋',desc:'以菱形连续排列构成网格骨架，常与联珠纹、花卉组合使用。北朝藻井中作为井心分割框架，唐代逐渐简化为辅助装饰。'},
+  '回纹':{period:'北朝—元',desc:'以直线折返构成的连续几何纹，源自中原青铜器装饰传统。在藻井中多用于边饰，象征"连绵不断"的吉祥寓意。'},
+  '万字纹':{period:'唐—元',desc:'卍字形连续旋转构成的几何纹样，源自佛教吉祥符号。唐代开始出现于藻井边饰，西夏时期大量使用，寓意"万德吉祥"。'},
+  '莲花纹':{period:'北朝—元',desc:'敦煌最基础也最持久的纹样，象征佛陀净土与圣洁。从北朝的写实莲花到盛唐的装饰化团花，贯穿千年，是藻井井心的核心母题。'},
+  '宝相花纹':{period:'初唐—晚唐',desc:'盛唐敦煌最具标志性的纹样，以莲花为基础融合石榴、葡萄等多种花卉意象层层包裹而成。恢宏富丽、独领风骚，盛唐达到巅峰后逐渐衰败。'},
+  '卷草纹':{period:'隋—元',desc:'以波状藤蔓为骨架、间填花叶的连续纹样，又称"唐草纹"。唐代最为华丽流畅，是藻井边饰的主要元素，象征生生不息。'},
+  '忍冬纹':{period:'北朝—隋',desc:'又称金银花纹，以三瓣或四瓣叶形连续排列。北朝藻井最主要的植物纹样，隋代后逐渐被卷草纹取代，象征"忍冬不凋"的坚忍品质。'},
+  '茶花纹':{period:'中晚唐',desc:'中晚唐时期取代宝相花纹成为主流，花瓣写实圆润，色彩清新淡雅。吐蕃占领后，世俗化审美上升，茶花纹反映从华丽向朴素的转变。'},
+  '三兔共耳':{period:'隋—初唐',desc:'三只兔子仅用三只耳朵构成视错觉循环，是敦煌最神秘的纹样之一。见于莫高窟第407窟等，体现佛法"三世轮回"的哲学思想，与欧洲中世纪教堂存在跨文化关联。'},
+  '龙纹':{period:'盛唐—元',desc:'融合本土龙图腾与佛教龙王概念，盛唐开始大量出现于藻井。西夏时期龙纹最为繁盛，常与凤纹配对使用，象征皇权与神圣。'},
+  '凤纹':{period:'盛唐—元',desc:'与龙纹配对出现的瑞禽纹样，融合本土凤凰崇拜与佛教金翅鸟概念。盛唐华丽，西夏趋于程式化，常与花卉组合构成"凤穿花"主题。'},
+  '迦陵频伽':{period:'盛唐—西夏',desc:'佛教中人首鸟身的音乐神，又称"妙音鸟"。盛唐藻井中与飞天呼应，象征"法音宣流"，形象优美灵动，是丝路多元文化的产物。'},
+  '飞天':{period:'北朝—元',desc:'敦煌最具辨识度的人物图像，融合印度天女与本土羽人概念。从北朝的V字形到盛唐的飘带凌空，姿态越来越自由灵动，象征超脱世俗的灵动之美。'},
+  '化生童子':{period:'盛唐—宋',desc:'佛教净土思想中从莲花中化生的人物形象，象征往生净土。盛唐藻井中常出现于井心边角，手持乐器或鲜花，表达对极乐世界的向往。'},
+  '伎乐天':{period:'盛唐—西夏',desc:'演奏乐器的天界乐师形象，常与飞天组合出现。盛唐藻井中持琵琶、箜篌等乐器，反映唐代宫廷音乐与佛教仪轨的融合。'}
+};
+document.querySelectorAll('.sub-tag').forEach(function(tag){
+  tag.addEventListener('click',function(e){
+    e.stopPropagation();
+    var subName=this.dataset.sub;
+    var cat=this.dataset.cat;
+    var detailBox=document.getElementById('subDetail-'+cat);
+    // 切换选中状态
+    var wasActive=this.classList.contains('active');
+    document.querySelectorAll('.sub-tag[data-cat="'+cat+'"]').forEach(function(t){t.classList.remove('active');});
+    if(wasActive){
+      detailBox.classList.remove('show');
+      return;
+    }
+    this.classList.add('active');
+    var info=subInfo[subName]||{period:'—',desc:'暂无详细说明。'};
+    detailBox.innerHTML='<div class="sub-detail-title">'+subName+'<span style="font-weight:400;font-size:.7rem;color:#999;margin-left:.5rem;">'+info.period+'</span></div>'+info.desc;
+    detailBox.setAttribute('data-cat',cat);
+    detailBox.classList.add('show');
+  });
+});
+
 /* ── 色块弹窗 ── */
 document.querySelectorAll('.swatch-box').forEach(function(box){
   box.addEventListener('click',function(){
@@ -577,6 +687,11 @@ function sendQuestion() {
     botDiv.className = 'msg msg-bot';
 
     var answerHtml = (data.answer || '未获取到回答').replace(/\n/g, '<br>');
+    // 将 Markdown 残留格式转为 HTML（兼容 LLM 返回的 Markdown）
+    answerHtml = answerHtml
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      .replace(/^• (.+)/gm, '<span style="display:list-item;margin-left:1.2em;">$1</span>');
     var sourcesHtml = '';
     if (data.sources && data.sources.length > 0) {
       sourcesHtml = '<br>' + data.sources.map(function(s){

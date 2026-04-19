@@ -94,8 +94,8 @@ def init_rag(_engine: VectorSearchEngine, _cfg: dict) -> RAGEngine:
         vector_engine=_engine,
         system_prompt=_cfg["rag"]["system_prompt"],
         llm_provider=_cfg["rag"]["llm_provider"],
-        llm_base_url=_cfg["rag"].get("llm_base_url", ""),
-        llm_model=_cfg["rag"]["llm_model"],
+        llm_base_url=os.environ.get("DUNHUANG_API_BASE", _cfg["rag"].get("llm_base_url", "")),
+        llm_model=os.environ.get("DUNHUANG_MODEL", _cfg["rag"]["llm_model"]),
         llm_max_tokens=_cfg["rag"]["llm_max_tokens"],
         llm_temperature=_cfg["rag"]["llm_temperature"],
     )
