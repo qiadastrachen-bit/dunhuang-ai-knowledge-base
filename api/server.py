@@ -47,9 +47,17 @@ _rag_engine: RAGEngine = None  # type: ignore
 _config: dict = {}
 
 
+def _ensure_config():
+    """确保全局配置已加载（模块被 import 时 _config 可能为空）。"""
+    global _config
+    if not _config:
+        _config = load_config()
+
+
 def get_vector_engine() -> VectorSearchEngine:
     """获取或初始化向量检索引擎（惰性单例）。"""
     global _vector_engine
+    _ensure_config()
     if _vector_engine is None:
         _vector_engine = _build_vector_engine()
     return _vector_engine
@@ -58,6 +66,7 @@ def get_vector_engine() -> VectorSearchEngine:
 def get_rag_engine() -> RAGEngine:
     """获取或初始化 RAG 引擎（惰性单例）。"""
     global _rag_engine
+    _ensure_config()
     if _rag_engine is None:
         _rag_engine = _build_rag_engine()
     return _rag_engine
