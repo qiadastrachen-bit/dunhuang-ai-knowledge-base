@@ -1,3 +1,14 @@
+---
+title: Dunhuang Knowledge Base
+emoji: 🏛
+colorFrom: blue
+colorTo: yellow
+sdk: docker
+app_port: 7860
+pinned: false
+short_description: RAG-based Dunhuang caisson pattern knowledge base
+---
+
 <p align="center">
   <h1 align="center">🏛️ 敦煌文化遗产智能知识库系统</h1>
   <p align="center">
@@ -22,9 +33,16 @@
 
 ## 在线体验
 
-> 部署完成后，将下方链接替换为你的公网地址，访客即可直接体验（无需安装）。
+**[🚀 点击在线体验](https://huggingface.co/spaces/Mrianda/dunhuang-knowledge-base)** — 无需安装，打开即可使用
 
-**[🚀 点击在线体验](https://your-demo-url.onrender.com)** ← 部署后替换此链接
+[![HF Space](https://img.shields.io/badge/🤗%20Hugging%20Face-在线体验-yellow)](https://huggingface.co/spaces/Mrianda/dunhuang-knowledge-base)
+[![GitHub](https://img.shields.io/badge/GitHub-源码仓库-blue)](https://github.com/qiadastrachen-bit/dunhuang-ai-knowledge-base)
+
+| 指标 | 数据 |
+|------|------|
+| 收录文献 | 33 篇 |
+| 向量化文本块 | 719 个 |
+| 部署方式 | Hugging Face Spaces（Docker） |
 
 本地体验：`python run.py` → 打开 http://localhost:5000
 
@@ -41,9 +59,10 @@
 
 ---
 
-## 🎬 演示视频
+## 🎬 演示
 
-> 视频录制中，敬请期待
+- **在线演示**：[Hugging Face Space](https://huggingface.co/spaces/Mrianda/dunhuang-knowledge-base)（敦煌风格 Web 界面，与本地 `python run.py` 一致）
+- 演示视频：录制中，敬请期待
 
 ---
 
@@ -231,29 +250,66 @@ git commit -m "add vector index for online demo"
 git push
 ```
 
-### 第三步：部署到 Render（推荐，免费）
+### 第三步：部署到 Hugging Face Spaces（推荐，已上线 ✅）
 
-1. 打开 [render.com](https://render.com) 注册并连接 GitHub
-2. **New → Blueprint**，选择本仓库（或 **New → Web Service → 选仓库 → Runtime: Docker**）
-3. 在 **Environment Variables** 中添加：
+本项目已部署至：**https://huggingface.co/spaces/Mrianda/dunhuang-knowledge-base**
 
-   | 变量名 | 值 |
-   |--------|-----|
+自行部署可参考以下步骤（无需信用卡）：
+
+1. 注册 [huggingface.co](https://huggingface.co/join)（邮箱即可，**无需绑卡**）
+2. 打开 [huggingface.co/new-space](https://huggingface.co/new-space)
+3. 填写：
+   - **Space name**：`dunhuang-knowledge-base`（或自定义）
+   - **SDK**：**Docker**（重要）
+   - **Hardware**：CPU basic（免费）
+4. 上传代码（推荐使用项目内脚本）：
+
+   ```bash
+   # 设置 HF Token 后执行
+   python upload_hf.py
+   ```
+
+   或使用 Git 推送：
+
+   ```bash
+   git remote add hf https://你的用户名:你的Token@huggingface.co/spaces/你的用户名/dunhuang-knowledge-base
+   git push hf main --force
+   ```
+
+5. 在 Space **Settings → Variables and secrets → Secrets** 添加：
+
+   | Name | Value |
+   |------|-------|
    | `DUNHUANG_API_KEY` | 你的 DeepSeek Key |
    | `DUNHUANG_API_BASE` | `https://api.deepseek.com` |
    | `DUNHUANG_MODEL` | `deepseek-chat` |
 
-4. 点击 Deploy，等待 5–15 分钟（首次会下载向量模型）
-5. 获得公网地址，例如：`https://dunhuang-knowledge-base.onrender.com`
+6. 等待 **Building** 完成（首次约 15～40 分钟）
+7. 获得体验地址：`https://huggingface.co/spaces/你的用户名/dunhuang-knowledge-base`
 
-6. 回到 README 的「在线体验」链接，替换为你的真实地址后 `git push`
+> `README.md` 顶部需包含 Hugging Face Docker Space 所需的 YAML 配置（本项目已包含）。  
+> 项目根目录已有 `Dockerfile`，监听端口 `7860`。
 
-### 备选：Hugging Face Spaces
+### 备选 A：Streamlit Cloud（更简单，界面为 Streamlit 版）
 
-1. 打开 [huggingface.co/new-space](https://huggingface.co/new-space)
-2. 选择 **Docker** 类型，连接 GitHub 仓库
-3. 在 Space **Settings → Repository secrets** 添加 `DUNHUANG_API_KEY`
-4. 部署完成后获得 `https://huggingface.co/spaces/你的用户名/空间名`
+1. 打开 [share.streamlit.io](https://share.streamlit.io) ，GitHub 登录
+2. **New app** → 选本仓库，**Main file** 填 `ui/app.py`
+3. **Advanced settings → Secrets** 填入：
+
+   ```toml
+   DUNHUANG_API_KEY = "sk-你的密钥"
+   DUNHUANG_API_BASE = "https://api.deepseek.com"
+   DUNHUANG_MODEL = "deepseek-chat"
+   ```
+
+4. Deploy 后获得 `https://你的应用名.streamlit.app`（展示的是 Streamlit 后台，不是 demo.html 主页）
+
+### 备选 B：Render（需 Visa/Mastercard 验证）
+
+1. 打开 [render.com](https://render.com) 注册并连接 GitHub
+2. **New → Web Service → Runtime: Docker**
+3. 环境变量同 Hugging Face Secrets 表
+4. 获得 `https://你的服务名.onrender.com`
 
 ### 安全提醒
 
@@ -263,7 +319,7 @@ git push
 
 ### GitHub 仓库展示建议
 
-- README 顶部贴上「在线体验」链接
+- README 顶部已附上 [在线体验](https://huggingface.co/spaces/Mrianda/dunhuang-knowledge-base) 链接
 - 截图放入 `docs/screenshots/` 并更新 README 图片（GitHub 会直接渲染）
 - 可选：录制 1–2 分钟演示视频上传到 B 站/YouTube，链接写在 README
 
@@ -352,8 +408,10 @@ dunhuang-ai-knowledge-base/
 ├── data/
 │   ├── raw/                  # PDF 文献（不提交 Git，仅本地使用）
 │   └── processed/            # 向量索引缓存（可提交，供在线部署）
-├── Dockerfile                # 云平台 Docker 部署
-├── render.yaml               # Render 一键部署配置
+├── Dockerfile                # Hugging Face / 云平台 Docker 部署
+├── upload_hf.py              # 上传项目到 Hugging Face Space
+├── streamlit_app.py          # Streamlit Cloud 入口（备选）
+├── render.yaml               # Render 一键部署配置（需绑卡）
 ├── docs/
 │   └── screenshots/          # 项目截图
 ├── .env.example              # 环境变量模板（复制为 .env 使用）
