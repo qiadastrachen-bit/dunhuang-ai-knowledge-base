@@ -1,0 +1,17 @@
+# Render 一键部署配置
+# 文档：https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: dunhuang-knowledge-base
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/status
+    envVars:
+      - key: DUNHUANG_API_KEY
+        sync: false
+      - key: DUNHUANG_API_BASE
+        value: https://api.deepseek.com
+      - key: DUNHUANG_MODEL
+        value: deepseek-chat
+      - key: PORT
+        value: 10000

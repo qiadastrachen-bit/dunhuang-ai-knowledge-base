@@ -227,7 +227,7 @@
       <div class="arch-arrow">→</div>
       <div class="arch-node proc">pypdf<br><small>文本提取</small></div>
       <div class="arch-arrow">→</div>
-      <div class="arch-node proc">滑动窗口<br><small>500词/块</small></div>
+      <div class="arch-node proc">滑动窗口<br><small>500字/块</small></div>
       <div class="arch-arrow">→</div>
       <div class="arch-node proc">MiniLM 向量<br><small>384维嵌入</small></div>
       <div class="arch-arrow">→</div>
@@ -247,7 +247,7 @@
       </div>
     </div>
     <div class="arch-desc fade-in">
-      <div class="arch-card"><h4>知识处理层</h4><p>使用 <code>pypdf</code> 批量提取 35 篇 PDF 学术文献，按 500 词/块滑动窗口分块，50词重叠保留跨块语义连贯。</p></div>
+      <div class="arch-card"><h4>知识处理层</h4><p>使用 <code>pypdf</code> 批量提取 35 篇 PDF 学术文献，按 500 字/块滑动窗口分块，50 字重叠保留跨块语义连贯。</p></div>
       <div class="arch-card"><h4>向量检索层</h4><p>使用 <code>paraphrase-multilingual-MiniLM-L12-v2</code> 生成 384 维语义向量，通过 <code>cosine_similarity</code> 计算余弦相似度。</p></div>
       <div class="arch-card"><h4>生成增强层</h4><p>将 Top-K 最相关文本块注入 Prompt，调用 <code>DeepSeek LLM</code> 生成有据可查的回答，有效降低幻觉，保证学术准确性。</p></div>
       <div class="arch-card"><h4>可视化展示层</h4><p>使用 <code>Chart.js</code> 构建交互式信息图表，支持按朝代/类型筛选，高亮检索关键词，实时展示结构化数据。</p></div>
@@ -582,12 +582,15 @@ document.querySelectorAll('.swatch-box').forEach(function(box){
 var API_BASE = window.location.origin + '/api';
 
 /* 页面加载时检查知识库状态 */
+window.DUNHUANG_USE_LLM = false;
 fetch(API_BASE + '/status')
   .then(function(r){ return r.json(); })
   .then(function(data){
     var el = document.getElementById('qaStatus');
+    window.DUNHUANG_USE_LLM = !!data.llm_available;
     if (data.status === 'ready') {
-      el.textContent = '● 知识库就绪 · ' + data.pdf_count + '篇文献 · ' + data.chunk_count + '个文本块';
+      var mode = data.llm_available ? 'AI 生成模式' : '检索摘要模式';
+      el.textContent = '● 知识库就绪 · ' + data.pdf_count + '篇文献 · ' + data.chunk_count + '个文本块 · ' + mode;
     } else {
       el.textContent = '● 知识库加载中…';
       el.classList.add('loading');
@@ -677,7 +680,7 @@ function sendQuestion() {
   fetch(API_BASE + '/ask', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ question: q, top_k: 5, use_llm: true })
+    body: JSON.stringify({ question: q, top_k: 5, use_llm: !!window.DUNHUANG_USE_LLM })
   })
   .then(function(r){ return r.json(); })
   .then(function(data){

@@ -154,6 +154,9 @@ def api_status():
     engine = get_vector_engine()
     pdf_count = len(set(m["source"] for m in engine.metadata)) if engine.metadata else 0
     chunk_count = len(engine.documents) if engine.documents else 0
+    llm_available = bool(
+        os.environ.get("DUNHUANG_API_KEY") or os.environ.get("OPENAI_API_KEY")
+    )
 
     return jsonify({
         "status": "ready",
@@ -161,6 +164,7 @@ def api_status():
         "chunk_count": chunk_count,
         "model_name": engine.model_name,
         "index_status": getattr(engine, "load_status", "unknown"),
+        "llm_available": llm_available,
     })
 
 
@@ -206,7 +210,7 @@ def api_ask():
     Request Body:
         question (str): 用户问题。
         top_k (int, optional): 检索数量，默认 5。
-        use_llm (bool, optional): 是否调用 LLM 生成，默认 true。
+        use_llm (bool, optional): 是否调用 LLM 生成，默认 false。
 
     Returns:
         JSON: question、answer、sources 列表。
@@ -214,7 +218,7 @@ def api_ask():
     data = request.get_json(silent=True) or {}
     question = data.get("question", "").strip()
     top_k = min(data.get("top_k", 5), 20)
-    use_llm = data.get("use_llm", True)
+    use_llm = data.get("use_llm", False)
 
     if not question:
         return jsonify({"error": "请提供问题（question）"}), 400

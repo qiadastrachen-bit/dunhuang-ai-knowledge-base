@@ -361,7 +361,10 @@ def render_qa():
         # 生成回答
         with st.chat_message("assistant"):
             with st.spinner("正在检索文献并生成回答..."):
-                result = rag.answer(question, top_k=5)
+                use_llm = bool(
+                    os.environ.get("DUNHUANG_API_KEY") or os.environ.get("OPENAI_API_KEY")
+                )
+                result = rag.answer(question, top_k=5, use_llm=use_llm)
 
             st.markdown(result["answer"])
 

@@ -121,7 +121,8 @@ def main():
         "--mode", choices=["web", "api", "ui"], default="web",
         help="启动模式：web（默认）= Flask + 前端, api = 仅 API, ui = Streamlit",
     )
-    parser.add_argument("--port", type=int, default=5000, help="Web/API 监听端口（默认 5000）")
+    default_port = int(os.environ.get("PORT", 5000))
+    parser.add_argument("--port", type=int, default=default_port, help="Web/API 监听端口（默认 5000，云平台会注入 PORT）")
     parser.add_argument("--no-browser", action="store_true", help="不自动打开浏览器")
     args = parser.parse_args()
 

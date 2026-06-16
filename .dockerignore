@@ -1,0 +1,17 @@
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
+.git/
+.gitignore
+.env
+.env.local
+*.log
+.vscode/
+.idea/
+data/raw/
+src/
+output/
+中期汇报/
+.workbuddy/

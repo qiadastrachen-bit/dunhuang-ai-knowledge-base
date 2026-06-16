@@ -22,7 +22,7 @@ class RAGEngine:
 
     Args:
         vector_engine: 已构建索引的向量检索引擎。
-        system_prompt: 系统提示词模板，支持 {{context}} 和 {{question}} 占位符。
+        system_prompt: 系统提示词模板，支持 {{context}} 占位符。
         llm_provider: LLM 提供商标识（deepseek / openai / local）。
         llm_base_url: API 基础 URL（留空则使用默认端点）。
         llm_model: 模型名称。
@@ -48,6 +48,23 @@ class RAGEngine:
         self.llm_model = os.environ.get("DUNHUANG_MODEL", llm_model)
         self.llm_max_tokens = llm_max_tokens
         self.llm_temperature = llm_temperature
+
+    def _resolve_base_url(self) -> Optional[str]:
+        """根据 provider 解析 API 端点。"""
+        if self.llm_base_url:
+            return self.llm_base_url
+        if self.llm_provider == "deepseek":
+            return "https://api.deepseek.com"
+        return None
+
+    def _build_system_prompt(self, context: str, question: str) -> str:
+        """组装注入检索上下文的系统提示词。"""
+        prompt = self.system_prompt.replace("{{context}}", context)
+        if "{{question}}" in prompt:
+            prompt = prompt.replace("{{question}}", question)
+        elif context and "{{context}}" not in self.system_prompt:
+            prompt = f"{prompt.rstrip()}\n\n【检索到的文献内容】\n{context}"
+        return prompt
 
     def retrieve(self, question: str, top_k: int = 5) -> List[dict]:
         """仅执行检索步骤，返回相关文档片段。
@@ -155,10 +172,10 @@ class RAGEngine:
 
             client = OpenAI(
                 api_key=api_key,
-                base_url=self.llm_base_url or None,
+                base_url=self._resolve_base_url(),
             )
 
-            prompt = self.system_prompt.replace("{{context}}", context).replace("{{question}}", question)
+            prompt = self._build_system_prompt(context, question)
 
             response = client.chat.completions.create(
                 model=self.llm_model,

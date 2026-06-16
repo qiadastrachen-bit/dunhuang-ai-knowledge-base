@@ -44,18 +44,21 @@ rag:
   # LLM 配置 — 通过环境变量注入 API Key
   # 支持：openai 兼容接口 / 本地模型
   llm_provider: "deepseek"            # 可选：openai, deepseek, local
-  llm_base_url: ""                    # 覆盖此值以使用自定义端点
+  llm_base_url: "https://api.deepseek.com"  # deepseek 默认端点；openai 可留空
   llm_model: "deepseek-chat"
   llm_max_tokens: 2048
   llm_temperature: 0.3
 
-  # System Prompt 模板，{{context}} 和 {{question}} 会被自动替换
+  # System Prompt 模板，{{context}} 会被自动替换为检索到的文献片段
   system_prompt: |
-    你是一位专注于敦煌学研究的学术助手。你的任务是根据提供的文献内容，准确回答用户关于敦煌文化遗产的问题。
+    你是一位专注于敦煌学研究的学术助手。请严格根据以下文献内容回答用户问题。
+
+    【检索到的文献内容】
+    {{context}}
 
     回答要求：
-    1. 基于提供的文献内容作答，不编造信息
-    2. 每个关键事实后标注来源文献
+    1. 仅基于上述文献内容作答，不编造信息
+    2. 每个关键事实后标注来源文献（使用文献中的【参考文献 N】编号）
     3. 如果文献中没有相关信息，请明确说明
     4. 回答应结构清晰、语言专业但不晦涩
 

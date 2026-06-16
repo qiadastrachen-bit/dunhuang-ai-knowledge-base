@@ -20,6 +20,16 @@
 
 ---
 
+## 在线体验
+
+> 部署完成后，将下方链接替换为你的公网地址，访客即可直接体验（无需安装）。
+
+**[🚀 点击在线体验](https://your-demo-url.onrender.com)** ← 部署后替换此链接
+
+本地体验：`python run.py` → 打开 http://localhost:5000
+
+---
+
 ## 目标用户
 
 | 用户类型 | 使用场景 |
@@ -159,14 +169,103 @@ python run.py
 默认使用检索摘要模式（无需 API Key）。如需 AI 生成完整回答：
 
 ```bash
-# 方式一：环境变量
+# 方式一：复制环境变量模板
+cp .env.example .env          # macOS/Linux
+copy .env.example .env        # Windows CMD
+# 编辑 .env，填入 DUNHUANG_API_KEY
+
+# 方式二：直接设置环境变量
 export DUNHUANG_API_KEY="your-api-key"  # macOS/Linux
 set DUNHUANG_API_KEY=your-api-key       # Windows CMD
 
-# 方式二：在 config/settings.yaml 中配置
+# 方式三：Streamlit 侧边栏输入 API Key
 ```
 
-支持 DeepSeek、OpenAI 及任何 OpenAI 兼容接口。
+支持 DeepSeek（默认端点 `https://api.deepseek.com`）、OpenAI 及任何 OpenAI 兼容接口。
+配置 API Key 后，Web 前端会自动切换为 AI 生成模式。
+
+---
+
+## 发布到 GitHub 并让别人在线体验
+
+GitHub **只能预览 README 和代码**，无法直接运行 Python 后端。要让别人「点开就能用」，需要：**本地配好 Key → 提交向量索引 → 部署到云平台 → README 贴上体验链接**。
+
+### 第一步：本地填入 DeepSeek API Key
+
+```bash
+# 若还没有 .env，先复制模板
+copy .env.example .env        # Windows
+# cp .env.example .env        # macOS/Linux
+```
+
+用记事本打开 `.env`，把 Key 填进去（**只保存在本地，不要提交到 Git**）：
+
+```env
+DUNHUANG_API_KEY=sk-你的真实密钥
+```
+
+Key 在 [DeepSeek 开放平台](https://platform.deepseek.com/api_keys) 申请。保存后本地验证：
+
+```bash
+python run.py
+```
+
+浏览器打开 http://localhost:5000 ，状态栏应显示 **「AI 生成模式」**。在「知识问答」提一个问题，能收到连贯回答即表示 Key 生效。
+
+### 第二步：确保知识库索引已构建
+
+`data/raw/` 中放入 PDF 后，运行一次 `python run.py`，系统会自动生成 `data/processed/` 下的三个文件：
+
+| 文件 | 作用 |
+|------|------|
+| `vector_index.npy` | 向量索引 |
+| `documents.json` | 文本块内容 |
+| `metadata.json` | 来源元数据 |
+
+在线部署**不需要上传 PDF**，只需把 `data/processed/` 这三个文件提交到 GitHub（原始 PDF 仍被 `.gitignore` 忽略）。
+
+```bash
+git add data/processed/
+git status   # 确认没有 .env 和 data/raw/*.pdf
+git commit -m "add vector index for online demo"
+git push
+```
+
+### 第三步：部署到 Render（推荐，免费）
+
+1. 打开 [render.com](https://render.com) 注册并连接 GitHub
+2. **New → Blueprint**，选择本仓库（或 **New → Web Service → 选仓库 → Runtime: Docker**）
+3. 在 **Environment Variables** 中添加：
+
+   | 变量名 | 值 |
+   |--------|-----|
+   | `DUNHUANG_API_KEY` | 你的 DeepSeek Key |
+   | `DUNHUANG_API_BASE` | `https://api.deepseek.com` |
+   | `DUNHUANG_MODEL` | `deepseek-chat` |
+
+4. 点击 Deploy，等待 5–15 分钟（首次会下载向量模型）
+5. 获得公网地址，例如：`https://dunhuang-knowledge-base.onrender.com`
+
+6. 回到 README 的「在线体验」链接，替换为你的真实地址后 `git push`
+
+### 备选：Hugging Face Spaces
+
+1. 打开 [huggingface.co/new-space](https://huggingface.co/new-space)
+2. 选择 **Docker** 类型，连接 GitHub 仓库
+3. 在 Space **Settings → Repository secrets** 添加 `DUNHUANG_API_KEY`
+4. 部署完成后获得 `https://huggingface.co/spaces/你的用户名/空间名`
+
+### 安全提醒
+
+- **永远不要**把 `DUNHUANG_API_KEY` 写进代码或提交到 GitHub（`.env` 已在 `.gitignore` 中）
+- 公网部署后，所有访客都会消耗你的 DeepSeek 额度，建议在 [DeepSeek 控制台](https://platform.deepseek.com) 设置用量上限
+- 若只想公开展示、不消耗 Key，部署时不填 `DUNHUANG_API_KEY`，访客仍可使用**检索摘要模式**
+
+### GitHub 仓库展示建议
+
+- README 顶部贴上「在线体验」链接
+- 截图放入 `docs/screenshots/` 并更新 README 图片（GitHub 会直接渲染）
+- 可选：录制 1–2 分钟演示视频上传到 B 站/YouTube，链接写在 README
 
 ---
 
@@ -220,9 +319,9 @@ Flask 后端提供以下 RESTful API：
 
 | 接口 | 方法 | 说明 |
 |------|------|------|
-| `/api/status` | GET | 知识库状态（PDF 数量、文本块数量、索引状态） |
+| `/api/status` | GET | 知识库状态（PDF 数量、文本块数量、索引状态、LLM 是否可用） |
 | `/api/search` | POST | 语义检索（body: `{"query": "...", "top_k": 5}`） |
-| `/api/ask` | POST | RAG 问答（body: `{"question": "...", "top_k": 5, "use_llm": false}`） |
+| `/api/ask` | POST | RAG 问答（body: `{"question": "...", "top_k": 5, "use_llm": false}`，默认检索摘要模式） |
 
 ---
 
@@ -251,10 +350,13 @@ dunhuang-ai-knowledge-base/
 │   ├── __init__.py
 │   └── logger.py             # 日志工具
 ├── data/
-│   ├── raw/                  # PDF 文献（需自行放入）
-│   └── processed/            # 向量索引缓存（自动生成）
+│   ├── raw/                  # PDF 文献（不提交 Git，仅本地使用）
+│   └── processed/            # 向量索引缓存（可提交，供在线部署）
+├── Dockerfile                # 云平台 Docker 部署
+├── render.yaml               # Render 一键部署配置
 ├── docs/
 │   └── screenshots/          # 项目截图
+├── .env.example              # 环境变量模板（复制为 .env 使用）
 ├── .gitignore
 ├── requirements.txt
 ├── run.py                    # 一键启动入口
